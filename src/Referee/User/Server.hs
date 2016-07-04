@@ -9,6 +9,7 @@ import Data.UUID (UUID)
 import qualified Data.Text as T
 import Control.Concurrent.STM
 import Control.Monad.Free
+import Network.Wai
 
 import Control.Lens
 import Control.Monad.IO.Class
@@ -22,9 +23,15 @@ type UserApi =
   :<|> Capture "id" UUID :> Get '[JSON] (Maybe User)
   :<|> "checkname" :> Capture "name" T.Text :> Get '[JSON] Bool
 
+userApi :: Proxy UserApi
+userApi = Proxy
+
 userServer :: UserInterpreter -> Server UserApi
 userServer interpret =
        liftIO . interpret . registerUser
   :<|> liftIO (interpret getUsers)
   :<|> liftIO . interpret . getUser
   :<|> liftIO . interpret . checkName
+
+userApplication :: UserInterpreter -> Application
+userApplication interpret = serve userApi (userServer interpret)
