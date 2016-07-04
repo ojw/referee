@@ -48,3 +48,9 @@ insert :: a -> UuidMap a -> (UUID.UUID, UuidMap a)
 insert val uuidMap = (uuid, UuidMap gen' members')
   where (uuid, gen') = Random.random (gen uuidMap)
         members' = Map.insert uuid val (members uuidMap)
+
+toList :: UuidMap a -> [(UUID.UUID, a)]
+toList uuidMap = Map.toList (members uuidMap)
+
+member :: UUID.UUID -> UuidMap a -> Bool
+member uuid uuidMap = Map.member uuid (members uuidMap)
