@@ -13,7 +13,6 @@ main = do
   userMap <- newUserMap
   mmMap <- newMatchmakingMap
   let userHandler = inMemoryUserHandler userMap
-      userApp = userApplication userHandler
       matchmakingHandler = inMemoryMatchmakingHandler mmMap
-      matchmakingApp = matchmakingApplication matchmakingHandler
-  run 8081 userApp
+      allApp = allApplication userHandler matchmakingHandler
+  run 8081 allApp
