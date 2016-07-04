@@ -23,8 +23,8 @@ type UserApi =
   :<|> "checkname" :> Capture "name" T.Text :> Get '[JSON] Bool
 
 userServer :: UserInterpreter -> Server UserApi
-userServer int =
-       (\reg -> liftIO (int (registerUser reg)))
-  :<|> liftIO (int getUsers)
-  :<|> (\userId -> liftIO (int (getUser userId)))
-  :<|> (\name -> liftIO (int (checkName name)))
+userServer interpret =
+       liftIO . interpret . registerUser
+  :<|> liftIO (interpret getUsers)
+  :<|> liftIO . interpret . getUser
+  :<|> liftIO . interpret . checkName
