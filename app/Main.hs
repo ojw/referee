@@ -3,9 +3,7 @@ module Main where
 import Network.Wai.Handler.Warp
 import Servant.JS
 
-import Referee.Routes
-import Referee.User
-import Referee.Matchmaking
+import Referee
 
 main :: IO ()
 main = do
