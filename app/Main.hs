@@ -1,7 +1,12 @@
 module Main where
 
-import Referee
-import Referee.Examples.RockPaperScissors
+import Referee.User.Handler.InMemory
+import Referee.User.Server
+import Network.Wai.Handler.Warp
 
 main :: IO ()
-main = return ()
+main = do
+  userMap <- newUserMap
+  let userHandler = handleUserApi userMap
+      userApp = userApplication userHandler
+  run 8081 userApp
