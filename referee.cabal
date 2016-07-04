@@ -22,10 +22,14 @@ library
                      , Referee.User.Handler.InMemory
                      , Referee.User.Api
                      , Referee.User.Types
+                     , Referee.User
+                     , Referee.Matchmaking
                      , Referee.UuidMap
                      , Referee.Utils
                      , Referee.Matchmaking.Routes
                      , Referee.Matchmaking.Handler.InMemory
+                     , Referee.Matchmaking.Api
+                     , Referee.Matchmaking.Types
                      , Referee.Routes
   build-depends:       base >= 4.7 && < 5
                      , servant

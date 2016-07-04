@@ -4,8 +4,8 @@ import Network.Wai.Handler.Warp
 import Servant.JS
 
 import Referee.Routes
-import Referee.User.Handler.InMemory
-import Referee.Matchmaking.Handler.InMemory
+import Referee.User
+import Referee.Matchmaking
 
 main :: IO ()
 main = do
