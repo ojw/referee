@@ -26,3 +26,6 @@ instance FromHttpApiData UUID where
   parseUrlPiece t = note (T.pack "breh that uuid is invalid") (fromText t)
   parseHeader b = note (T.pack "breh c'mon, wtf?") (fromASCIIBytes b)
   parseQueryParam t = note (T.pack "ugh") (fromText t)
+
+instance ToHttpApiData UUID where
+  toUrlPiece t = toText t

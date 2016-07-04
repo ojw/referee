@@ -16,7 +16,6 @@ import Network.Wai
 import Referee.Matchmaking.Types
 import Referee.Matchmaking.Api
 import Referee.Common.Types
-import Referee.User.Types -- ugh why is this here?
 
 type MatchmakingRoutes = Auth :>
       ("join-random" :> Post '[JSON] UUID
