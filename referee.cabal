@@ -18,14 +18,15 @@ library
   exposed-modules:     Referee
                      , Referee.Examples.RockPaperScissors
                      , Referee.Config
-                     , Referee.User.Server
+                     , Referee.User.Routes
                      , Referee.User.Handler.InMemory
                      , Referee.User.Api
                      , Referee.User.Types
                      , Referee.UuidMap
                      , Referee.Utils
-                     , Referee.Matchmaking.Server
+                     , Referee.Matchmaking.Routes
                      , Referee.Matchmaking.Handler.InMemory
+                     , Referee.Routes
   build-depends:       base >= 4.7 && < 5
                      , servant
                      , servant-client

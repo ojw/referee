@@ -2,7 +2,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE RankNTypes #-}
 
-module Referee.User.Server where
+module Referee.User.Routes where
 
 import Servant
 import Data.UUID (UUID)
@@ -17,16 +17,16 @@ import Control.Monad.IO.Class
 import Referee.User.Types
 import Referee.User.Api
 
-type UserApi =
+type UserRoutes =
        "register" :> ReqBody '[JSON] UserRegistration :> Post '[JSON] (Maybe UserId)
   :<|> Get '[JSON] [User]
   :<|> Capture "id" UUID :> Get '[JSON] (Maybe User)
   :<|> "checkname" :> Capture "name" T.Text :> Get '[JSON] Bool
 
-userApi :: Proxy UserApi
-userApi = Proxy
+userRoutes :: Proxy UserRoutes
+userRoutes = Proxy
 
-userServer :: UserInterpreter -> Server UserApi
+userServer :: UserInterpreter -> Server UserRoutes
 userServer interpret =
        liftIO . interpret . registerUser
   :<|> liftIO (interpret getUsers)
@@ -34,4 +34,4 @@ userServer interpret =
   :<|> liftIO . interpret . checkName
 
 userApplication :: UserInterpreter -> Application
-userApplication interpret = serve userApi (userServer interpret)
+userApplication interpret = serve userRoutes (userServer interpret)
