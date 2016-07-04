@@ -11,6 +11,8 @@ import Control.Monad (mzero)
 import Servant
 import Control.Error
 
+import qualified Referee.Utils as Utils
+
 type Connection = ()
 
 data UserRegistration = UserRegistration
@@ -18,7 +20,7 @@ data UserRegistration = UserRegistration
   , registrationEmail :: T.Text
   }
 
-deriveJSON (defaultOptions {fieldLabelModifier = map Data.Char.toLower . dropWhile (not . Data.Char.isUpper)}) ''UserRegistration
+deriveJSON (defaultOptions {fieldLabelModifier = Utils.labelModifier}) ''UserRegistration
 
 type UserId = UUID
 
@@ -27,7 +29,7 @@ data User = User
   , userEmail :: T.Text
   } deriving Show
 
-deriveJSON (defaultOptions {fieldLabelModifier = map Data.Char.toLower . dropWhile (not . Data.Char.isUpper)}) ''User
+deriveJSON (defaultOptions {fieldLabelModifier = Utils.labelModifier}) ''User
 
 instance ToJSON UUID where
   toJSON uuid = Data.Aeson.String (toText uuid)

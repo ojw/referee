@@ -38,5 +38,5 @@ handleUserF tMap userF = (liftIO . atomically) $ do
     GetUser userId cont -> return . cont $ Referee.UuidMap.lookup userId userMap
     CheckName name cont -> return . cont $ handleCheckName name userMap
 
-handleUserApi :: TVar UserMap -> Free UserF a -> IO a
-handleUserApi tMap = foldFree (handleUserF tMap)
+inMemoryUserHandler :: TVar UserMap -> Free UserF a -> IO a
+inMemoryUserHandler tvar = foldFree (handleUserF tvar)

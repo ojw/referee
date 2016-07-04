@@ -1,11 +1,13 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Referee.Matchmaking.Api where
 
-import Data.Proxy (Proxy(..))
 import Data.UUID (UUID)
-import Servant
 import Control.Concurrent.STM.TVar
 import Control.Monad.STM
 import Control.Monad.IO.Class
@@ -13,35 +15,29 @@ import Control.Monad.IO.Class
 import Referee.UuidMap
 import Referee.Matchmaking.Types
 import Referee.Common.Types
-import Referee.Config (Config(..))
 
-type MatchmakingApi = Auth :>
-      ("join-random" :> Post '[JSON] UUID
-  :<|> "create-public" :> Post '[JSON] UUID
-  :<|> "create-private" :> Post '[JSON] UUID
-  :<|> "join" :> Capture "id" UUID :> Post '[JSON] ()) -- this should indicate success
+import Control.Monad.Free
+import Control.Monad.Free.TH
 
-matchmakingApi :: Proxy MatchmakingApi
-matchmakingApi = Proxy
+data MatchmakingF a where
+  JoinRandom :: (UUID -> a) -> MatchmakingF a
+  CreateMatchmaking :: MatchmakingType -> (MatchmakingId -> a) -> MatchmakingF a
+  GetMatchmaking :: MatchmakingId -> (Maybe Matchmaking -> a) -> MatchmakingF a
+  Join :: Player -> MatchmakingId -> (Bool -> a) -> MatchmakingF a
 
--- hmm... does the server hold a bunch of TVars for different systems?
--- for the in-memory ones, anyhow
--- that seems like it may be reasonable / composable.
-matchmakingServer :: TVar MatchmakingServer -> Server MatchmakingApi
-matchmakingServer serverVar mJwt =
-       (liftIO . atomically) (do
-         server <- readTVar serverVar
-         let (uuid, server') = joinRandom 1 server
-         writeTVar serverVar server'
-         return uuid)
-  :<|> (liftIO . atomically) (do
-         server <- readTVar serverVar
-         let (uuid, server') = createPublic 1 server
-         writeTVar serverVar server'
-         return uuid)
-  :<|> (liftIO . atomically) (do
-         server <- readTVar serverVar
-         let (uuid, server') = createPrivate 1 server
-         writeTVar serverVar server'
-         return uuid)
-  :<|> \uuid -> (liftIO . atomically) (modifyTVar serverVar (joinByUUID 1 uuid))
+deriving instance Functor MatchmakingF
+
+type MatchmakingInterpreter = forall a . Free MatchmakingF a -> IO a
+
+makeFree_ ''MatchmakingF
+
+joinRandom :: Free MatchmakingF UUID
+createMatchmaking :: MatchmakingType -> Free MatchmakingF MatchmakingId
+getMatchmaking :: MatchmakingId -> Free MatchmakingF (Maybe Matchmaking)
+
+tryJoin :: Player -> MatchmakingId -> Free MatchmakingF Bool
+tryJoin player matchmakingId = do
+  mMatchmaking <- getMatchmaking matchmakingId
+  case mMatchmaking of
+    Nothing -> return False
+    Just matchmaking -> join player matchmakingId

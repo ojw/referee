@@ -6,3 +6,5 @@ import Servant.API
 import Data.Text (Text)
 
 type Auth = Header "auth" Text
+
+type Player = Int
