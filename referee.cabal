@@ -31,6 +31,7 @@ library
                      , Referee.Matchmaking.Api
                      , Referee.Matchmaking.Types
                      , Referee.Routes
+                     , Referee.Common.Types
   build-depends:       base >= 4.7 && < 5
                      , servant
                      , servant-client

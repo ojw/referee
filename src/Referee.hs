@@ -15,5 +15,3 @@ where
 import Referee.Routes
 import Referee.User
 import Referee.Matchmaking
-
--- gotta map a game's internal player model w/ the server's player model

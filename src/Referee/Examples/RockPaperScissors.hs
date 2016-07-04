@@ -2,8 +2,6 @@ module Referee.Examples.RockPaperScissors where
 
 import Data.Maybe (isJust)
 
-import qualified Referee
-
 data Throw = Rock | Paper | Scissors
   deriving Eq
 
@@ -35,6 +33,3 @@ outcome' t1 t2 = if t1 == t2 then Draw else outcome' t2 t1
 
 outcome :: RPSState -> Maybe RPSOutcome
 outcome (RPSState (Just t1) (Just t2)) = Just (outcome' t1 t2)
-
--- rpsGame :: Referee.Game RPSTime RPSCommand RPSState RPSOutcome
--- rpsGame = Referee.Game tick command outcome

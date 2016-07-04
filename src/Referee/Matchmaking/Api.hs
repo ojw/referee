@@ -7,11 +7,6 @@
 
 module Referee.Matchmaking.Api where
 
-import Data.UUID (UUID)
-import Control.Concurrent.STM.TVar
-import Control.Monad.STM
-import Control.Monad.IO.Class
-
 import Referee.UuidMap
 import Referee.Matchmaking.Types
 import Referee.Common.Types
@@ -20,7 +15,7 @@ import Control.Monad.Free
 import Control.Monad.Free.TH
 
 data MatchmakingF a where
-  JoinRandom :: (UUID -> a) -> MatchmakingF a
+  JoinRandom :: (MatchmakingId -> a) -> MatchmakingF a
   CreateMatchmaking :: MatchmakingType -> (MatchmakingId -> a) -> MatchmakingF a
   GetMatchmaking :: MatchmakingId -> (Maybe Matchmaking -> a) -> MatchmakingF a
   Join :: Player -> MatchmakingId -> (Bool -> a) -> MatchmakingF a
@@ -31,7 +26,7 @@ type MatchmakingInterpreter = forall a . Free MatchmakingF a -> IO a
 
 makeFree_ ''MatchmakingF
 
-joinRandom :: Free MatchmakingF UUID
+joinRandom :: Free MatchmakingF MatchmakingId
 createMatchmaking :: MatchmakingType -> Free MatchmakingF MatchmakingId
 getMatchmaking :: MatchmakingId -> Free MatchmakingF (Maybe Matchmaking)
 

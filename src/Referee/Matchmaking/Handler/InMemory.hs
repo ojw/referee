@@ -24,18 +24,14 @@ randomMatches :: MatchmakingServer -> [(UUID, Matchmaking)]
 randomMatches server = filter isRandom (UuidMap.toList server)
   where isRandom (uuid, mm) = (_matchmakingType mm) == Random
 
-        -- omg where does that 2 come from, right?
-        -- need a way to have some assumed matchmaking config,
-        -- probably as a part of a MatchmakingServer
+-- would be better to define this stuff in terms of the free monad actions
 joinRandom' :: Player -> MatchmakingServer -> (UUID, MatchmakingServer)
 joinRandom' player server = case (listToMaybe . map fst) (randomMatches server) of
   Nothing -> insert (Matchmaking 2 (Set.fromList [player]) Random) server
-  Just uuid -> (uuid, joinByUUID player uuid server)
+  Just uuid -> (uuid, joinById player uuid server)
 
--- this name is bad, but joinMatch is taken
--- gotta rename things soon
-joinByUUID :: Player -> UUID -> MatchmakingServer -> MatchmakingServer
-joinByUUID player match server = UuidMap.update (joinMatch player) match server
+joinById :: Player -> MatchmakingId -> MatchmakingServer -> MatchmakingServer
+joinById player match server = UuidMap.update (joinMatch player) match server
 
 createPublic :: Player -> MatchmakingServer -> (UUID, MatchmakingServer)
 createPublic player server = insert (Matchmaking 2 (Set.fromList [player]) Public) server

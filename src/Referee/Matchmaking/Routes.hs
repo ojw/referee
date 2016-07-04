@@ -13,7 +13,6 @@ import Control.Monad.IO.Class
 import qualified Data.Text as T
 import Network.Wai
 
-import Referee.UuidMap
 import Referee.Matchmaking.Types
 import Referee.Matchmaking.Api
 import Referee.Common.Types
