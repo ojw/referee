@@ -23,6 +23,6 @@ import Referee.Matchmaking.Types
 -- In fact, I should have auth be a pre-auth-token type
 -- and wrap it in 'matchmakingClients'.
 
-matchmakingClients auth = (joinRandom, createPublic, createPrivate, join)
-  where
-    joinRandom :<|> createPublic :<|> createPrivate :<|> join = client matchmakingRoutes auth
+matchmakingClients auth = client matchmakingRoutes auth
+
+-- joinRandom :<|> createPublic :<|> createPrivate :<|> join = matchmakingClients auth
