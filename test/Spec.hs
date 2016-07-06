@@ -67,3 +67,8 @@ matchmakingApiTest = do
     thirdPlayer <- interpret $ tryJoin player3 mmId
     specify "...but there's no room for more players." $ do
       thirdPlayer `shouldBe` False
+  describe "Joining random matches also works." $ do
+    mmId <- interpret $ joinRandom player1
+    mmm <- interpret $ getMatchmaking mmId
+    specify "After joining a random match, that match exists." $ do
+      mmm `shouldSatisfy` Maybe.isJust
