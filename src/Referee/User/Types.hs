@@ -23,6 +23,6 @@ type UserId = UUID
 data User = User
   { userName :: T.Text
   , userEmail :: T.Text
-  } deriving Show
+  } deriving (Show, Eq)
 
 deriveJSON (defaultOptions {fieldLabelModifier = Utils.labelModifier}) ''User

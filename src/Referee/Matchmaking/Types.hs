@@ -12,14 +12,16 @@ import Referee.UuidMap as UuidMap
 
 type MatchmakingId = UUID
 
+data MatchmakingError = MatchNotFound | MatchFull
+
 data MatchmakingType = Public | Private | Random -- random needs a better name?
-  deriving (Eq)
+  deriving (Eq, Show)
 -- okay let's asume matches require an exact number of players?
 data Matchmaking = Matchmaking
   { _requiredPlayers :: Int
   , _joinedPlayers   :: Set.Set Player
   , _matchmakingType :: MatchmakingType
-  }
+  } deriving Show
 
                  -- this probably needs to include some sort of config
                  -- for creating new Matchmaking records
@@ -29,6 +31,9 @@ makeLenses ''Matchmaking
 
 spaceRemaining :: Matchmaking -> Int
 spaceRemaining matchmaking = _requiredPlayers matchmaking - Set.size (_joinedPlayers matchmaking)
+
+isJoinable :: Matchmaking -> Bool
+isJoinable matchmaking = spaceRemaining matchmaking > 0
 
 matchReady :: Matchmaking -> Bool
 matchReady matchmaking = spaceRemaining matchmaking == 0
@@ -40,10 +45,9 @@ matchReady matchmaking = spaceRemaining matchmaking == 0
 
 -- let's start w/ what's needed for rps
 
--- the Nothing case means the match was full
--- this should be an Either later
-joinMatch :: Player -> Matchmaking -> Maybe Matchmaking
-joinMatch player match = if spaceRemaining match > 0 then Just (over joinedPlayers (Set.insert player) match) else Nothing
+-- This is a low-level join
+joinMatch :: Player -> Matchmaking -> Matchmaking
+joinMatch player match = if isJoinable match then (over joinedPlayers (Set.insert player)) match else match
 
 -- need a startMatch, but no idea what it should do just yet
 newMatchmaking :: MatchmakingType -> Int -> Matchmaking

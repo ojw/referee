@@ -28,7 +28,7 @@ matchmakingRoutes = Proxy
 
 matchmakingServer :: MatchmakingInterpreter -> Server MatchmakingRoutes
 matchmakingServer interpret mText =
-       (liftIO . interpret) Referee.Matchmaking.Api.joinRandom
+       (liftIO . interpret) (Referee.Matchmaking.Api.joinRandom 1)
   :<|> (liftIO . interpret) (createMatchmaking Public)
   :<|> (liftIO . interpret) (createMatchmaking Private)
   :<|> liftIO . interpret . tryJoin 1

@@ -54,3 +54,6 @@ toList uuidMap = Map.toList (members uuidMap)
 
 member :: UUID.UUID -> UuidMap a -> Bool
 member uuid uuidMap = Map.member uuid (members uuidMap)
+
+keys :: UuidMap a -> [UUID.UUID]
+keys uuidMap = Map.keys (members uuidMap)
