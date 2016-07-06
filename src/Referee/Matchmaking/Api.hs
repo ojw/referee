@@ -24,8 +24,6 @@ data MatchmakingF a where
 
 deriving instance Functor MatchmakingF
 
-type MatchmakingInterpreter = forall a . Free MatchmakingF a -> IO a
-
 makeFree_ ''MatchmakingF
 
 createMatchmaking :: MatchmakingType -> Free MatchmakingF MatchmakingId

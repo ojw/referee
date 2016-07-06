@@ -26,12 +26,12 @@ type MatchmakingRoutes = Auth :>
 matchmakingRoutes :: Proxy MatchmakingRoutes
 matchmakingRoutes = Proxy
 
-matchmakingServer :: MatchmakingInterpreter -> Server MatchmakingRoutes
+matchmakingServer :: Interpreter MatchmakingF IO -> Server MatchmakingRoutes
 matchmakingServer interpret mText =
        (liftIO . interpret) (Referee.Matchmaking.Api.joinRandom 1)
   :<|> (liftIO . interpret) (createMatchmaking Public)
   :<|> (liftIO . interpret) (createMatchmaking Private)
   :<|> liftIO . interpret . tryJoin 1
 
-matchmakingApplication :: MatchmakingInterpreter -> Application
+matchmakingApplication :: Interpreter MatchmakingF IO -> Application
 matchmakingApplication interpret = serve matchmakingRoutes (matchmakingServer interpret)

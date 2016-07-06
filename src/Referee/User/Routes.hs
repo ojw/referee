@@ -22,12 +22,12 @@ type UserRoutes =
 userRoutes :: Proxy UserRoutes
 userRoutes = Proxy
 
-userServer :: UserInterpreter -> Server UserRoutes
+userServer :: Interpreter UserF IO -> Server UserRoutes
 userServer interpret =
        liftIO . interpret . registerUser
   :<|> liftIO (interpret getUsers)
   :<|> liftIO . interpret . getUser
   :<|> liftIO . interpret . checkName
 
-userApplication :: UserInterpreter -> Application
+userApplication :: Interpreter UserF IO -> Application
 userApplication interpret = serve userRoutes (userServer interpret)

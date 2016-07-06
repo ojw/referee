@@ -1,4 +1,6 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 module Referee.Common.Types where
 
@@ -9,11 +11,14 @@ import Control.Error
 import Control.Monad (mzero)
 import Data.UUID
 import qualified Data.Text as T
+import Control.Monad.Free (Free)
+import Control.Concurrent.STM
 
 type Auth = Header "auth" Text
 
 type Player = Int
 
+type Interpreter f m = forall a . Free f a -> m a
 instance ToJSON UUID where
   toJSON uuid = Data.Aeson.String (toText uuid)
 

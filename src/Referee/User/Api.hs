@@ -11,6 +11,7 @@ import qualified Data.Text as T
 import Control.Monad.Free
 import Control.Monad.Free.TH
 
+import Referee.Common.Types
 import Referee.User.Types
 
 data UserF a where
@@ -21,9 +22,7 @@ data UserF a where
 
 deriving instance Functor UserF
 
-type UserInterpreter = forall a . Free UserF a -> IO a
-
--- type UserApi = Free UserF
+type UserApi = Free UserF
 
 makeFree_ ''UserF
 

@@ -22,6 +22,7 @@ import Referee.User.Routes
 import Referee.User.Api
 import Referee.Matchmaking.Routes
 import Referee.Matchmaking.Api
+import Referee.Common.Types
 
 type AllRoutes =
        "user" :> UserRoutes
@@ -30,10 +31,10 @@ type AllRoutes =
 allRoutes :: Proxy AllRoutes
 allRoutes = Proxy
 
-allServer :: UserInterpreter -> MatchmakingInterpreter -> Server AllRoutes
+allServer :: Interpreter UserF IO -> Interpreter MatchmakingF IO -> Server AllRoutes
 allServer userI matchmakingI =
        userServer userI
   :<|> matchmakingServer matchmakingI
 
-allApplication :: UserInterpreter -> MatchmakingInterpreter -> Application
+allApplication :: Interpreter UserF IO -> Interpreter MatchmakingF IO -> Application
 allApplication userI matchmakingI = serve allRoutes (allServer userI matchmakingI)
