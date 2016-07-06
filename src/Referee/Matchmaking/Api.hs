@@ -56,8 +56,12 @@ joinRandom player = do
   case listToMaybe randoms of
     Nothing -> do
       mmId <- createMatchmaking Random
-      join player mmId
-      return mmId
+      -- joining could fail if the match has filled up
+      -- might be better to just return false on failure
+      -- instead of assuming success... I'm not sure
+      worked <- join player mmId
+      if worked then return mmId else joinRandom player
     Just mmId -> do
-      join player mmId
-      return mmId
+      -- again, joining could fail if the match has filled up
+      worked <- join player mmId
+      if worked then return mmId else joinRandom player
