@@ -33,10 +33,6 @@ handleMatchmakingF :: TVar MatchmakingMap -> MatchmakingF a -> IO a
 handleMatchmakingF tvar matchmakingF = liftIO . atomically $ do
   matchmakingMap <- readTVar tvar
   case matchmakingF of
-    -- JoinRandom cont -> do
-    --   let (uuid, mmMap') = joinRandom' 1 matchmakingMap
-    --   writeTVar tvar mmMap'
-    --   return (cont uuid)
     CreateMatchmaking mmType cont -> do
       let (uuid, mmMap') = insert (newMatchmaking mmType 2) matchmakingMap
       writeTVar tvar mmMap'
@@ -44,7 +40,6 @@ handleMatchmakingF tvar matchmakingF = liftIO . atomically $ do
     GetMatchmaking mmId cont -> do
       let mmm = UuidMap.lookup mmId matchmakingMap
       return (cont mmm)
-    -- join is totally wrong
     Join player mmId cont -> do
       let mmm = UuidMap.lookup mmId matchmakingMap
           (success, mmMap') = case mmm of

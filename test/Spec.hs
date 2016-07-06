@@ -12,7 +12,6 @@ main = hspec $ do
   userApiTest
   matchmakingApiTest
 
--- Yuck addUser collides w/ too many names at the moment
 userApiTest = do
   let sharedName = T.pack "some name"
       registration1 = UserRegistration sharedName (T.pack "an email")

@@ -16,7 +16,6 @@ import Control.Monad.Free.TH
 import Data.Maybe (listToMaybe)
 
 data MatchmakingF a where
---   JoinRandom :: (MatchmakingId -> a) -> MatchmakingF a
   CreateMatchmaking :: MatchmakingType -> (MatchmakingId -> a) -> MatchmakingF a
   GetMatchmaking :: MatchmakingId -> (Maybe Matchmaking -> a) -> MatchmakingF a
   Join :: Player -> MatchmakingId -> (Bool -> a) -> MatchmakingF a
@@ -29,7 +28,6 @@ type MatchmakingInterpreter = forall a . Free MatchmakingF a -> IO a
 
 makeFree_ ''MatchmakingF
 
--- joinRandom :: Free MatchmakingF MatchmakingId
 createMatchmaking :: MatchmakingType -> Free MatchmakingF MatchmakingId
 getMatchmaking :: MatchmakingId -> Free MatchmakingF (Maybe Matchmaking)
 join :: Player -> MatchmakingId -> Free MatchmakingF Bool
@@ -44,6 +42,14 @@ tryJoin player matchmakingId = do
     Just matchmaking -> join player matchmakingId
 
 -- still wrong, needs to filter for available randoms
+-- however... this turns out to be a bit more of a problem than expected
+-- since it's possible for another user to join matches while `player`
+-- is trying to join.
+-- Is it necessary to just call joinRandom again repeatedly?
+-- or to just try the join, then create a random match if that fails?
+-- It's actually possible to not be quick enough to join one's own
+-- newly-created random branch in strange circumstances.
+-- I guess it could just keep re-calling joinRandom.
 joinRandom :: Player -> Free MatchmakingF MatchmakingId
 joinRandom player = do
   randoms <- randomMatches

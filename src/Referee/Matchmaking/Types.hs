@@ -23,8 +23,9 @@ data Matchmaking = Matchmaking
   , _matchmakingType :: MatchmakingType
   } deriving Show
 
-                 -- this probably needs to include some sort of config
-                 -- for creating new Matchmaking records
+-- this probably needs to include some sort of config
+-- for creating new Matchmaking records
+
 type MatchmakingServer = UuidMap Matchmaking
 
 makeLenses ''Matchmaking
