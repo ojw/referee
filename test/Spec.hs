@@ -6,6 +6,7 @@ import qualified Data.Set as Set
 
 import Referee.User
 import Referee.Matchmaking
+import Referee.Common.Types
 
 main :: IO ()
 main = hspec $ do
@@ -17,7 +18,7 @@ userApiTest = do
       registration1 = UserRegistration sharedName (T.pack "an email")
       registration2 = UserRegistration sharedName (T.pack "another email")
   userMap <- runIO newUserMap
-  let interpret = runIO . inMemoryUserHandler userMap
+  let interpret = runIO . translate . inMemoryUserHandler userMap
   describe "Adding a user works." $ do
     users <- interpret getUsers
     specify "The initial user list is empty." $ do
@@ -45,7 +46,7 @@ userApiTest = do
 
 matchmakingApiTest = do
   matchmakingMap <- runIO newMatchmakingMap
-  let interpret = runIO . inMemoryMatchmakingHandler matchmakingMap
+  let interpret = runIO . translate . inMemoryMatchmakingHandler matchmakingMap
       player1 = 1
       player2 = 2
       player3 = 3

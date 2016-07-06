@@ -9,7 +9,6 @@ import Referee.User.Types
 import Referee.User.Api
 import Referee.UuidMap
 
-
 type UserMap = UuidMap User
 
 -- | I think it'll be more useful to have an IO (TVar UserMap) than an IO UserMap,
@@ -26,8 +25,8 @@ handleAddUser userMap registration = insert user userMap
 handleCheckName :: T.Text -> UserMap -> Bool
 handleCheckName name userMap = null $ filter (\(userId, user) -> (userName user == name)) (toList userMap)
 
-handleUserF :: TVar UserMap -> UserF a -> IO a
-handleUserF tMap userF = (liftIO . atomically) $ do
+handleUserF :: TVar UserMap -> UserF a -> STM a
+handleUserF tMap userF = do
   userMap <- readTVar tMap
   case userF of
     AddUser reg cont -> do
@@ -38,5 +37,5 @@ handleUserF tMap userF = (liftIO . atomically) $ do
     GetUser userId cont -> return . cont $ Referee.UuidMap.lookup userId userMap
     CheckName name cont -> return . cont $ handleCheckName name userMap
 
-inMemoryUserHandler :: TVar UserMap -> Free UserF a -> IO a
+inMemoryUserHandler :: TVar UserMap -> Free UserF a -> STM a
 inMemoryUserHandler tvar = foldFree (handleUserF tvar)

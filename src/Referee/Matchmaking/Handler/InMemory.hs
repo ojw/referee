@@ -29,8 +29,8 @@ createPublic player server = insert (Matchmaking 2 (Set.fromList [player]) Publi
 createPrivate :: Player -> MatchmakingServer -> (UUID, MatchmakingServer)
 createPrivate player server = insert (Matchmaking 2 (Set.fromList [player]) Private) server
 
-handleMatchmakingF :: TVar MatchmakingMap -> MatchmakingF a -> IO a
-handleMatchmakingF tvar matchmakingF = liftIO . atomically $ do
+handleMatchmakingF :: TVar MatchmakingMap -> MatchmakingF a -> STM a
+handleMatchmakingF tvar matchmakingF = do
   matchmakingMap <- readTVar tvar
   case matchmakingF of
     CreateMatchmaking mmType cont -> do
@@ -56,5 +56,5 @@ handleMatchmakingF tvar matchmakingF = liftIO . atomically $ do
           randoms = map fst . filter (\(_, mm) -> _matchmakingType mm == Random) $ mms
       return (cont randoms)
 
-inMemoryMatchmakingHandler :: TVar MatchmakingMap -> Free MatchmakingF a -> IO a
+inMemoryMatchmakingHandler :: TVar MatchmakingMap -> Free MatchmakingF a -> STM a
 inMemoryMatchmakingHandler tvar = foldFree (handleMatchmakingF tvar)

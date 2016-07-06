@@ -8,6 +8,7 @@ module Referee
   , allRoutes
   , newUserMap
   , newMatchmakingMap
+  , Translates(..)
   )
 
 where
@@ -15,3 +16,4 @@ where
 import Referee.Routes
 import Referee.User
 import Referee.Matchmaking
+import Referee.Common.Types

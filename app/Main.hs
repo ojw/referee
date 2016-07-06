@@ -10,7 +10,7 @@ main = do
   writeJSForAPI allRoutes vanillaJS "api.js"
   userMap <- newUserMap
   mmMap <- newMatchmakingMap
-  let userHandler = inMemoryUserHandler userMap
-      matchmakingHandler = inMemoryMatchmakingHandler mmMap
+  let userHandler = translate . inMemoryUserHandler userMap
+      matchmakingHandler = translate . inMemoryMatchmakingHandler mmMap
       allApp = allApplication userHandler matchmakingHandler
   run 8081 allApp
