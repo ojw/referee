@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Referee.Routes
 
@@ -31,10 +32,18 @@ type AllRoutes =
 allRoutes :: Proxy AllRoutes
 allRoutes = Proxy
 
-allServer :: Interpreter UserF IO -> Interpreter MatchmakingF IO -> Server AllRoutes
+allServer
+  :: (Translates m1 IO, Translates m2 IO)
+  => Interpreter UserF m1
+  -> Interpreter MatchmakingF m2
+  -> Server AllRoutes
 allServer userI matchmakingI =
        userServer userI
   :<|> matchmakingServer matchmakingI
 
-allApplication :: Interpreter UserF IO -> Interpreter MatchmakingF IO -> Application
+allApplication
+  :: (Translates m1 IO, Translates m2 IO)
+  => Interpreter UserF m1
+  -> Interpreter MatchmakingF m2
+  -> Application
 allApplication userI matchmakingI = serve allRoutes (allServer userI matchmakingI)

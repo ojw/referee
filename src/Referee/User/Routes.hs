@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Referee.User.Routes where
 
@@ -22,12 +23,15 @@ type UserRoutes =
 userRoutes :: Proxy UserRoutes
 userRoutes = Proxy
 
-userServer :: Interpreter UserF IO -> Server UserRoutes
+userServer
+  :: Translates m IO
+  => Interpreter UserF m
+  -> Server UserRoutes
 userServer interpret =
-       liftIO . interpret . registerUser
-  :<|> liftIO (interpret getUsers)
-  :<|> liftIO . interpret . getUser
-  :<|> liftIO . interpret . checkName
+       liftIO . translate . interpret . registerUser
+  :<|> (liftIO . translate) (interpret getUsers)
+  :<|> liftIO . translate . interpret . getUser
+  :<|> liftIO . translate . interpret . checkName
 
 userApplication :: Interpreter UserF IO -> Application
 userApplication interpret = serve userRoutes (userServer interpret)

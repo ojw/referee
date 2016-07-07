@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Referee.Matchmaking.Routes where
 
@@ -26,12 +27,15 @@ type MatchmakingRoutes = Auth :>
 matchmakingRoutes :: Proxy MatchmakingRoutes
 matchmakingRoutes = Proxy
 
-matchmakingServer :: Interpreter MatchmakingF IO -> Server MatchmakingRoutes
+matchmakingServer
+  :: Translates m IO
+  => Interpreter MatchmakingF m
+  -> Server MatchmakingRoutes
 matchmakingServer interpret mText =
-       (liftIO . interpret) (Referee.Matchmaking.Api.joinRandom 1)
-  :<|> (liftIO . interpret) (createMatchmaking Public)
-  :<|> (liftIO . interpret) (createMatchmaking Private)
-  :<|> liftIO . interpret . tryJoin 1
+       (liftIO . translate . interpret) (Referee.Matchmaking.Api.joinRandom 1)
+  :<|> (liftIO . translate . interpret) (createMatchmaking Public)
+  :<|> (liftIO . translate . interpret) (createMatchmaking Private)
+  :<|> liftIO . translate . interpret . tryJoin 1
 
 matchmakingApplication :: Interpreter MatchmakingF IO -> Application
 matchmakingApplication interpret = serve matchmakingRoutes (matchmakingServer interpret)
