@@ -35,11 +35,8 @@ data Login = Login
 newtype HashedPassword = HashedPassword { hashedBytes :: B.ByteString }
   deriving (Eq)
 
--- this really needs to live in a config file or something
-bCryptCost = 10
-
-hashPassword :: B.ByteString -> IO HashedPassword
-hashPassword password = HashedPassword <$> BCrypt.hashPassword bCryptCost password
+hashPassword :: Int -> B.ByteString -> IO HashedPassword
+hashPassword cost password = HashedPassword <$> BCrypt.hashPassword cost password
 
 validatePassword :: B.ByteString -> Login -> Bool
 validatePassword password login = BCrypt.validatePassword password (hashedBytes (hashedPassword login))
