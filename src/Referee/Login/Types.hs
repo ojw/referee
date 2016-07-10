@@ -17,21 +17,12 @@ import qualified Crypto.KDF.BCrypt as BCrypt
 import qualified Data.UUID as UUID
 
 import Referee.User.Types
+import qualified Referee.Common.Types as Types
 
 type LoginId = UUID.UUID
 
--- username is the field we need on the login route to lookup the login record
--- so it would be nice for it to live on the login record
-
--- I think this is okay...
--- we can have the username be in the jwt used for auth
--- and thus not have to look it up when doing user-things
-
--- this is a lesson in the drawbacks to low-level, fine-granularity,
--- free-monad based APIs
-
 data Login = Login
-  { username :: T.Text
+  { email :: Types.Email
   , hashedPassword :: HashedPassword
   , userId :: UserId
   , loginId :: LoginId

@@ -16,4 +16,5 @@ where
 import Referee.Routes
 import Referee.User
 import Referee.Matchmaking
+import Referee.Login
 import Referee.Common.Types

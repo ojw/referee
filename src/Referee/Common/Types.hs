@@ -14,6 +14,8 @@ import qualified Data.Text as T
 import Control.Monad.Free (Free)
 import Control.Concurrent.STM
 
+newtype Email = Email { unEmail :: T.Text } deriving (Eq)
+
 type Auth = Header "auth" Text
 
 type Player = Int
