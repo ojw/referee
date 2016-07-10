@@ -37,22 +37,24 @@ allRoutes :: Proxy AllRoutes
 allRoutes = Proxy
 
 allServer
-  :: (Translates m1 IO, Translates m2 IO)
+  :: (Monad m1, Translates m1 IO, Translates m2 IO)
   => Interpreter UserF m1
   -> Interpreter MatchmakingF m2
   -> Interpreter LoginF m1
-  -> B.ByteString
+  -> B.ByteString -- jwt hash secret
+  -> Int -- bcrypt cost
   -> Server AllRoutes
-allServer userI matchmakingI loginI secret =
-       userServer userI loginI
+allServer userI matchmakingI loginI secret cost =
+       userServer userI loginI cost
   :<|> matchmakingServer matchmakingI
   :<|> loginServer loginI secret
 
 allApplication
-  :: (Translates m1 IO, Translates m2 IO)
+  :: (Monad m1, Translates m1 IO, Translates m2 IO)
   => Interpreter UserF m1
   -> Interpreter MatchmakingF m2
   -> Interpreter LoginF m1
-  -> B.ByteString
+  -> B.ByteString -- jwt hash secret
+  -> Int -- bcrypt cost
   -> Application
-allApplication userI matchmakingI loginI secret = serve allRoutes (allServer userI matchmakingI loginI secret)
+allApplication userI matchmakingI loginI secret cost = serve allRoutes (allServer userI matchmakingI loginI secret cost)

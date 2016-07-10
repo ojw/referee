@@ -28,6 +28,6 @@ main = do
       let userHandler = inMemoryUserHandler userMap
           matchmakingHandler = inMemoryMatchmakingHandler mmMap
           loginHandler = inMemoryLoginHandler loginMap
-          allApp = allApplication userHandler matchmakingHandler loginHandler (B.pack "secret")
+          allApp = allApplication userHandler matchmakingHandler loginHandler (Config._jwtSecret config) (Config._bcryptCost config)
       -- run the app
       run 8081 allApp
