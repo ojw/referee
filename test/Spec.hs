@@ -3,15 +3,18 @@ import Test.Hspec
 import qualified Data.Maybe as Maybe
 import qualified Data.Text as T
 import qualified Data.Set as Set
+import qualified Data.UUID as UUID
 
 import Referee.User
 import Referee.Matchmaking
 import Referee.Common.Types
+import qualified TestMatchmaking as MatchmakingTests
 
 main :: IO ()
 main = hspec $ do
   userApiTest
   matchmakingApiTest
+  MatchmakingTests.main
 
 userApiTest = do
   let sharedName = T.pack "some name"
@@ -47,9 +50,9 @@ userApiTest = do
 matchmakingApiTest = do
   matchmakingMap <- runIO newMatchmakingMap
   let interpret = runIO . translate . inMemoryMatchmakingHandler matchmakingMap
-      player1 = 1
-      player2 = 2
-      player3 = 3
+      Just player1 = UUID.fromText . T.pack $ "1499467f-456f-438a-ad37-f4b1ea88326c"
+      Just player2 = UUID.fromText . T.pack $ "b90bde1c-3388-42ff-b4b5-fbbaf376624f"
+      Just player3 = UUID.fromText . T.pack $ "66860ac0-b1a2-4d3e-84aa-eb2deb4d642d"
   describe "Matchmaking creation works." $ do
     matches <- interpret publicMatches
     specify "Initially there are no public matches." $ do

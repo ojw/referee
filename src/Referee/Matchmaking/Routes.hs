@@ -5,24 +5,22 @@
 
 module Referee.Matchmaking.Routes where
 
-import Data.Proxy (Proxy(..))
-import Data.UUID (UUID)
 import Servant
-import Control.Concurrent.STM.TVar
-import Control.Monad.STM
 import Control.Monad.IO.Class
-import qualified Data.Text as T
-import Network.Wai
+import Network.Wai (Application, Request, requestHeaders)
+import qualified Data.UUID as UUID
 
+import Referee.User.Types (UserId)
 import Referee.Matchmaking.Types
 import Referee.Matchmaking.Api
 import Referee.Common.Types
+import qualified Referee.Authentication as Auth
 
-type MatchmakingRoutes = Auth :>
-      ("join-random" :> Post '[JSON] UUID
-  :<|> "create-public" :> Post '[JSON] UUID
-  :<|> "create-private" :> Post '[JSON] UUID
-  :<|> "join" :> Capture "id" UUID :> Post '[JSON] Bool)
+type MatchmakingRoutes = Auth.WithAuthentication
+      ("join-random" :> Post '[JSON] UUID.UUID
+  :<|> "create-public" :> Post '[JSON] UUID.UUID
+  :<|> "create-private" :> Post '[JSON] UUID.UUID
+  :<|> "join" :> Capture "id" UUID.UUID :> Post '[JSON] Bool)
 
 matchmakingRoutes :: Proxy MatchmakingRoutes
 matchmakingRoutes = Proxy
@@ -31,11 +29,12 @@ matchmakingServer
   :: Translates m IO
   => Interpreter MatchmakingF m
   -> Server MatchmakingRoutes
-matchmakingServer interpret mText =
-       (liftIO . translate . interpret) (Referee.Matchmaking.Api.joinRandom 1)
-  :<|> (liftIO . translate . interpret) (createMatchmaking Public)
-  :<|> (liftIO . translate . interpret) (createMatchmaking Private)
-  :<|> liftIO . translate . interpret . tryJoin 1
+matchmakingServer interpret =
+       (\player -> (liftIO . translate . interpret) (Referee.Matchmaking.Api.joinRandom player))
+  :<|> (\player -> (liftIO . translate . interpret) (createMatchmaking Public))
+  :<|> (\player -> (liftIO . translate . interpret) (createMatchmaking Private))
+  :<|> (\player -> liftIO . translate . interpret . tryJoin player)
 
-matchmakingApplication :: Interpreter MatchmakingF IO -> Application
-matchmakingApplication interpret = serve matchmakingRoutes (matchmakingServer interpret)
+matchmakingApplication :: Interpreter MatchmakingF IO -> Secret -> Application
+matchmakingApplication interpret secret =
+  serveWithContext matchmakingRoutes (Auth.getAuthContext secret) (matchmakingServer interpret)

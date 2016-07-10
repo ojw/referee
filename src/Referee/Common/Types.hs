@@ -11,14 +11,13 @@ import Control.Error
 import Control.Monad (mzero)
 import Data.UUID
 import qualified Data.Text as T
+import qualified Data.ByteString as B
 import Control.Monad.Free (Free)
 import Control.Concurrent.STM
 
 newtype Email = Email { unEmail :: T.Text } deriving (Eq)
 
 type Auth = Header "auth" Text
-
-type Player = Int
 
 type Interpreter f m = forall a . Free f a -> m a
 
@@ -62,3 +61,5 @@ instance FromHttpApiData UUID where
 
 instance ToHttpApiData UUID where
   toUrlPiece t = toText t
+
+type Secret = B.ByteString

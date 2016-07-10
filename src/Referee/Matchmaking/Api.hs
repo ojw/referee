@@ -10,6 +10,7 @@ module Referee.Matchmaking.Api where
 import Referee.UuidMap
 import Referee.Matchmaking.Types
 import Referee.Common.Types
+import Referee.User.Types
 
 import Control.Monad.Free
 import Control.Monad.Free.TH
@@ -18,7 +19,7 @@ import Data.Maybe (listToMaybe)
 data MatchmakingF a where
   CreateMatchmaking :: MatchmakingType -> (MatchmakingId -> a) -> MatchmakingF a
   GetMatchmaking :: MatchmakingId -> (Maybe Matchmaking -> a) -> MatchmakingF a
-  Join :: Player -> MatchmakingId -> (Bool -> a) -> MatchmakingF a
+  Join :: UserId -> MatchmakingId -> (Bool -> a) -> MatchmakingF a
   PublicMatches :: ([MatchmakingId] -> a) -> MatchmakingF a
   RandomMatches :: ([MatchmakingId] -> a) -> MatchmakingF a
 
@@ -28,11 +29,11 @@ makeFree_ ''MatchmakingF
 
 createMatchmaking :: MatchmakingType -> Free MatchmakingF MatchmakingId
 getMatchmaking :: MatchmakingId -> Free MatchmakingF (Maybe Matchmaking)
-join :: Player -> MatchmakingId -> Free MatchmakingF Bool
+join :: UserId -> MatchmakingId -> Free MatchmakingF Bool
 publicMatches :: Free MatchmakingF [MatchmakingId]
 randomMatches :: Free MatchmakingF [MatchmakingId]
 
-tryJoin :: Player -> MatchmakingId -> Free MatchmakingF Bool
+tryJoin :: UserId -> MatchmakingId -> Free MatchmakingF Bool
 tryJoin player matchmakingId = do
   mMatchmaking <- getMatchmaking matchmakingId
   case mMatchmaking of
@@ -48,7 +49,7 @@ tryJoin player matchmakingId = do
 -- It's actually possible to not be quick enough to join one's own
 -- newly-created random branch in strange circumstances.
 -- I guess it could just keep re-calling joinRandom.
-joinRandom :: Player -> Free MatchmakingF MatchmakingId
+joinRandom :: UserId -> Free MatchmakingF MatchmakingId
 joinRandom player = do
   randoms <- randomMatches
   case listToMaybe randoms of

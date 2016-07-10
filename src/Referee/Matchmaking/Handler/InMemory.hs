@@ -9,6 +9,7 @@ import Control.Monad.Free
 import Control.Monad.Free.TH
 
 import Referee.Common.Types
+import Referee.User.Types
 import Referee.Matchmaking.Types
 import Referee.Matchmaking.Api
 import Referee.UuidMap as UuidMap
@@ -24,13 +25,13 @@ newMatchmakingMap = do
   newMap <- emptyIO updateMatchmakingId
   newTVarIO newMap
 
-joinById :: Player -> MatchmakingId -> MatchmakingServer -> MatchmakingServer
+joinById :: UserId -> MatchmakingId -> MatchmakingServer -> MatchmakingServer
 joinById player match server = UuidMap.adjust (joinMatch player) match server
 
-createPublic :: Player -> MatchmakingServer -> (UUID, MatchmakingServer)
+createPublic :: UserId -> MatchmakingServer -> (UUID, MatchmakingServer)
 createPublic player server = insert (Matchmaking 2 (Set.fromList [player]) Public UuidMap.nilId) server
 
-createPrivate :: Player -> MatchmakingServer -> (UUID, MatchmakingServer)
+createPrivate :: UserId -> MatchmakingServer -> (UUID, MatchmakingServer)
 createPrivate player server = insert (Matchmaking 2 (Set.fromList [player]) Private UuidMap.nilId) server
 
 handleMatchmakingF :: TVar MatchmakingMap -> MatchmakingF a -> STM a

@@ -16,7 +16,6 @@ where
 
 import Servant
 import Network.Wai
-import qualified Data.ByteString as B
 
 import Referee.UuidMap
 
@@ -27,6 +26,7 @@ import Referee.Matchmaking.Api
 import Referee.Login.Routes
 import Referee.Login.Api
 import Referee.Common.Types
+import qualified Referee.Authentication as Auth
 
 type AllRoutes =
        "user" :> UserRoutes
@@ -41,7 +41,7 @@ allServer
   => Interpreter UserF m1
   -> Interpreter MatchmakingF m2
   -> Interpreter LoginF m1
-  -> B.ByteString -- jwt hash secret
+  -> Secret -- jwt secret hash
   -> Int -- bcrypt cost
   -> Server AllRoutes
 allServer userI matchmakingI loginI secret cost =
@@ -54,7 +54,8 @@ allApplication
   => Interpreter UserF m1
   -> Interpreter MatchmakingF m2
   -> Interpreter LoginF m1
-  -> B.ByteString -- jwt hash secret
+  -> Secret -- jwt secret hash
   -> Int -- bcrypt cost
   -> Application
-allApplication userI matchmakingI loginI secret cost = serve allRoutes (allServer userI matchmakingI loginI secret cost)
+allApplication userI matchmakingI loginI secret cost =
+  serveWithContext allRoutes (Auth.getAuthContext secret) (allServer userI matchmakingI loginI secret cost)

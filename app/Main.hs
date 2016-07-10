@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
 import Network.Wai.Handler.Warp
@@ -19,8 +21,9 @@ main = do
       putStrLn "Here's the complaint the config library threw:"
       putStrLn complaint
     Right config -> do
-      -- generate javascript for calling the api
-      writeJSForAPI allRoutes vanillaJS "api.js"
+      -- here is where we'd generate JS for calling the api, if Joe hadn't broken this
+      -- when adding Auth and chickend out when he saw the error message
+      -- writeJSForAPI allRoutes vanillaJS "api.js"
       -- initialize the various modules
       userMap <- newUserMap
       mmMap <- newMatchmakingMap
