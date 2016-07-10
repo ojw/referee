@@ -5,6 +5,7 @@ module Referee.Config where
 import System.Envy
 import Control.Lens
 import Data.ByteString as B
+import Data.ByteString.Char8 as C
 import Control.Exception (try, SomeException)
 import qualified Configuration.Dotenv as Dotenv
 
@@ -17,8 +18,8 @@ data Config = Config
 makeLenses ''Config
 
 instance FromEnv Config where
-  fromEnv = Config <$> (env "JWT_SECRET")
-                   <*> (env "BCRYPT_COST")
+  fromEnv = Config <$> (envMaybe "JWT_SECRET" .!= C.pack "secret")
+                   <*> (envMaybe "BCRYPT_COST" .!= 10)
 
 -- string as the error type?  In 2016???
 getConfig :: IO (Either String Config)

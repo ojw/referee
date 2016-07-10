@@ -4,10 +4,12 @@ module Referee
 
   ( inMemoryUserHandler
   , inMemoryMatchmakingHandler
+  , inMemoryLoginHandler
   , allApplication
   , allRoutes
   , newUserMap
   , newMatchmakingMap
+  , newLoginMap
   , Translates(..)
   )
 

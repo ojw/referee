@@ -34,6 +34,11 @@ library
                      , Referee.Common.Types
                      , Referee.User.Client
                      , Referee.Matchmaking.Client
+                     , Referee.Login
+                     , Referee.Login.Routes
+                     , Referee.Login.Handler.InMemory
+                     , Referee.Login.Api
+                     , Referee.Login.Types
   build-depends:       base >= 4.7 && < 5
                      , servant
                      , servant-client
@@ -68,6 +73,7 @@ executable referee-exe
                      , referee
                      , warp
                      , servant-js
+                     , bytestring
                      -- hspec shouldn't be required for the executable
                      -- but intero complains if it isn't here
                      , hspec
