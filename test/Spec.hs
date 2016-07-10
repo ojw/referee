@@ -15,8 +15,8 @@ main = hspec $ do
 
 userApiTest = do
   let sharedName = T.pack "some name"
-      registration1 = UserRegistration sharedName (T.pack "an email")
-      registration2 = UserRegistration sharedName (T.pack "another email")
+      registration1 = UserRegistration sharedName (T.pack "an email") (T.pack "pw")
+      registration2 = UserRegistration sharedName (T.pack "another email") (T.pack "pw")
   userMap <- runIO newUserMap
   let interpret = runIO . translate . inMemoryUserHandler userMap
   describe "Adding a user works." $ do
