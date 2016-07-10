@@ -18,18 +18,13 @@ import Referee.User.Types
 
 -- username is the field we need on the login route to lookup the login record
 -- so it would be nice for it to live on the login record
--- yuck, should it live in both places?
--- probably username should live w/ user, and be used to look up login info
--- buuut I'm gonna leave it here for now
+
+-- I think this is okay...
+-- we can have the username be in the jwt used for auth
+-- and thus not have to look it up when doing user-things
 
 -- this is a lesson in the drawbacks to low-level, fine-granularity,
 -- free-monad based APIs
-
--- although... maybe not.
--- as a higher-level api with a different backend could use the lower-level
--- api differently.
-
--- for now, this will just take whatever form is short-term convenient
 
 data Login = Login
   { username :: T.Text

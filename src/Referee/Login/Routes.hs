@@ -35,7 +35,6 @@ type LoginRoutes =
 loginRoutes :: Proxy LoginRoutes
 loginRoutes = Proxy
 
--- WOW this is really gross
 loginServer
   :: (Translates m1 IO, Translates m2 IO)
   => Interpreter LoginF m1
@@ -48,11 +47,7 @@ loginServer interpretLogin interpretUser secret =
 
     username <- musername ?? err400 { errBody = Char8.pack "Missing username, bub." }
     password <- mpassword ?? err400 { errBody = Char8.pack "Gotta include a password dawg." }
-    -- this'll eventually be IO
-    -- ...also, this is why the HashedPassword constructor should not be exposed
-    -- only a "smart constructor" that does the hashing
 
-    -- this piece is m
     -- initially I didn't like having to call translate here, but I'm okay with it now
     -- although I think translate might be the wrong word...
     -- the intention is more like "do the transactional thing now"
