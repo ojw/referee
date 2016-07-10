@@ -3,19 +3,19 @@
 module Referee.Config where
 
 import System.Envy
-import Web.JWT
 import Control.Lens
+import Data.ByteString as B
 import Control.Exception (try, SomeException)
 import qualified Configuration.Dotenv as Dotenv
 
 data Config = Config
-  { _jwtSecret :: Secret }
+  { _jwtSecret :: B.ByteString }
   deriving Show
 
 makeLenses ''Config
 
 instance FromEnv Config where
-  fromEnv = Config <$> fmap secret (env "JWT_SECRET")
+  fromEnv = Config <$> (env "JWT_SECRET")
 
 -- string as the error type?  In 2016???
 getConfig :: IO (Either String Config)

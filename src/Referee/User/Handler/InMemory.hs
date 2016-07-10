@@ -18,7 +18,9 @@ newUserMap = do
   newMap <- emptyIO
   newTVarIO newMap
 
-handleAddUser :: UserMap ->  UserRegistration -> (UserId, UserMap)
+-- gotta change this to bytestring
+-- after hashing the provided pw immediately after receipt
+handleAddUser :: UserMap ->  UserRegistration T.Text -> (UserId, UserMap)
 handleAddUser userMap registration = insert user userMap
   where user = User (registrationName registration) (registrationEmail registration)
 

@@ -12,7 +12,7 @@ import Referee.User.Types
 
 register :<|> getUsers :<|> getUser :<|> checkName = client userRoutes
 
-register :: UserRegistration -> Manager -> BaseUrl -> ExceptT ServantError IO (Maybe UserId)
+register :: UserRegistration T.Text -> Manager -> BaseUrl -> ExceptT ServantError IO (Maybe UserId)
 
 getUsers :: Manager -> BaseUrl -> ExceptT ServantError IO [User]
 

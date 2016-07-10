@@ -15,7 +15,7 @@ import Referee.User.Types
 import Referee.User.Api
 
 type UserRoutes =
-       "register" :> ReqBody '[JSON] UserRegistration :> Post '[JSON] (Maybe UserId)
+       "register" :> ReqBody '[JSON] (UserRegistration T.Text) :> Post '[JSON] (Maybe UserId)
   :<|> Get '[JSON] [User]
   :<|> Capture "id" UserId :> Get '[JSON] (Maybe User)
   :<|> "checkname" :> Capture "name" T.Text :> Get '[JSON] Bool
