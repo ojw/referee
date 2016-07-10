@@ -17,13 +17,13 @@ data Rules command state view = Rules
   { rulesTick    :: Time -> state -> state
   -- because a user might not be allower to send a certain command
   -- e.g. if the user isn't in the game, or the command is illegal
-  , rulesCommand :: (UserId, command) -> state -> (Bool, state)
+  , rulesCommand :: UserId -> command -> state -> (Bool, state)
   -- Nothing means the game isn't over
   , rulesOutcome :: state -> Maybe Outcome
   -- Nothing means matchmaking wasn't actually ready to start
-  , ruleCreate  :: Matchmaking -> Maybe state
+  , rulesCreate  :: Matchmaking -> Maybe (Game state)
   -- Nothing means the user isn't entitled to a view of the state
-  , ruleView :: state -> UserId -> Maybe view
+  , rulesView :: state -> UserId -> Maybe view
   }
 
 type GameId = Data.UUID.UUID

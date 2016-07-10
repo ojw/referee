@@ -41,17 +41,37 @@ handleGameF tvar gameF = do
       return (cont mgameId)
     View gameId userId rules cont -> return (cont (handleView gameId userId rules gameMap))
 
-handleTick :: GameId -> Time -> Rules c state v -> GameMap state -> (state, GameMap state)
-handleTick = undefined
+handleTick :: GameId -> Time -> Rules c state v -> GameMap state -> (Maybe state, GameMap state)
+handleTick gameId time rules gameMap = case UuidMap.lookup gameId gameMap of
+  Nothing -> (Nothing, gameMap)
+  Just game -> let state' = rulesTick rules time (gameState game)
+                   -- I really want lens here
+                   gameMap' = adjust (\_ -> game {gameState = state'}) gameId gameMap
+               in  (Just state', gameMap')
 
 handleAddCommand :: GameId -> UserId -> command -> Rules command s v -> GameMap s -> (Bool, GameMap s)
-handleAddCommand = undefined
+handleAddCommand gameId userId command rules gameMap = case UuidMap.lookup gameId gameMap of
+  Nothing -> (False, gameMap)
+  Just game -> let (success, state') = rulesCommand rules userId command (gameState game)
+                   gameMap' = adjust (\_ -> game {gameState = state'}) gameId gameMap
+               in (success, gameMap')
 
+-- returns Nothing, indicating an ongoing game, if the gameId isn't in gameMap...
+-- that's probably not the best behavior
+-- eventually I'll probably have to add some custom error types
 handleOutcome :: GameId -> Rules c s v -> GameMap s -> Maybe Outcome
-handleOutcome = undefined
+handleOutcome gameId rules gameMap = do
+  game <- UuidMap.lookup gameId gameMap
+  rulesOutcome rules (gameState game)
 
-handleCreate :: MatchmakingId -> Rules c s v -> GameMap s -> (Maybe GameId, GameMap s)
-handleCreate = undefined
+handleCreate :: Matchmaking -> Rules c s v -> GameMap s -> (Maybe GameId, GameMap s)
+handleCreate matchmaking rules gameMap = case rulesCreate rules matchmaking of
+  Nothing -> (Nothing, gameMap)
+  Just game ->
+    let (gameId, gameMap') = UuidMap.insert game gameMap
+    in (Just gameId, gameMap')
 
 handleView :: GameId -> UserId -> Rules c s view -> GameMap s -> Maybe view
-handleView = undefined
+handleView gameId userId rules gameMap = case UuidMap.lookup gameId gameMap of
+  Nothing -> Nothing
+  Just game -> rulesView rules (gameState game) userId
