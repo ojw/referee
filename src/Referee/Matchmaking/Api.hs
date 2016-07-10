@@ -7,7 +7,6 @@
 
 module Referee.Matchmaking.Api where
 
-import Referee.UuidMap
 import Referee.Matchmaking.Types
 import Referee.Common.Types
 import Referee.User.Types
