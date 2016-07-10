@@ -12,6 +12,7 @@ import Data.Aeson.TH
 import Data.Aeson
 
 import qualified Referee.Utils as Utils
+import Referee.Common.Types
 
 type Connection = ()
 
@@ -37,6 +38,7 @@ type UserId = UUID
 data User = User
   { userName :: T.Text
   , userEmail :: T.Text
+  , userId :: UUID
   } deriving (Show, Eq)
 
 deriveJSON (defaultOptions {fieldLabelModifier = Utils.labelModifier}) ''User

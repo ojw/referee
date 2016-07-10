@@ -6,6 +6,7 @@ module Referee.Login.Types
   , HashedPassword
   , hashPassword
   , validatePassword
+  , LoginId
   )
 
 where
@@ -13,8 +14,11 @@ where
 import qualified Data.Text as T
 import qualified Data.ByteString as B
 import qualified Crypto.KDF.BCrypt as BCrypt
+import qualified Data.UUID as UUID
 
 import Referee.User.Types
+
+type LoginId = UUID.UUID
 
 -- username is the field we need on the login route to lookup the login record
 -- so it would be nice for it to live on the login record
@@ -30,6 +34,7 @@ data Login = Login
   { username :: T.Text
   , hashedPassword :: HashedPassword
   , userId :: UserId
+  , loginId :: LoginId
   }
 
 newtype HashedPassword = HashedPassword { hashedBytes :: B.ByteString }

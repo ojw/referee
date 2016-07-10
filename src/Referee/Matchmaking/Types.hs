@@ -21,6 +21,7 @@ data Matchmaking = Matchmaking
   { _requiredPlayers :: Int
   , _joinedPlayers   :: Set.Set Player
   , _matchmakingType :: MatchmakingType
+  , _matchmakingId   :: MatchmakingId
   } deriving Show
 
 -- this probably needs to include some sort of config
@@ -52,4 +53,4 @@ joinMatch player match = if isJoinable match then (over joinedPlayers (Set.inser
 
 -- need a startMatch, but no idea what it should do just yet
 newMatchmaking :: MatchmakingType -> Int -> Matchmaking
-newMatchmaking mtype count  = Matchmaking count Set.empty mtype
+newMatchmaking mtype count  = Matchmaking count Set.empty mtype UuidMap.nilId

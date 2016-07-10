@@ -11,18 +11,21 @@ import Referee.UuidMap
 
 type UserMap = UuidMap User
 
+updateUserId :: UserId -> User -> User
+updateUserId uuid user = user { userId = uuid }
+
 -- | I think it'll be more useful to have an IO (TVar UserMap) than an IO UserMap,
 -- given handleUserApi.
 newUserMap :: IO (TVar UserMap)
 newUserMap = do
-  newMap <- emptyIO
+  newMap <- emptyIO updateUserId
   newTVarIO newMap
 
 -- gotta change this to bytestring
 -- after hashing the provided pw immediately after receipt
 handleAddUser :: UserMap ->  UserRegistration T.Text -> (UserId, UserMap)
 handleAddUser userMap registration = insert user userMap
-  where user = User (registrationName registration) (registrationEmail registration)
+  where user = User (registrationName registration) (registrationEmail registration) nilId
 
 handleCheckName :: T.Text -> UserMap -> Bool
 handleCheckName name userMap = null $ filter (\(userId, user) -> (userName user == name)) (toList userMap)

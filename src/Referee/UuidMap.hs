@@ -12,16 +12,20 @@ import qualified System.Random as Random
 -- Maybe newtype it to hide implementation details?  Or nah.
 data UuidMap a = UuidMap
   { gen :: Random.StdGen
+  , updateId :: UUID.UUID -> a -> a
   , members :: Map.Map UUID.UUID a
-  } deriving (Functor, Foldable, Traversable)
+  }
 
-emptyIO :: IO (UuidMap a)
-emptyIO = do
+nilId :: UUID.UUID
+nilId = UUID.nil
+
+emptyIO :: (UUID.UUID -> a -> a) -> IO (UuidMap a)
+emptyIO updateId = do
   g <- Random.getStdGen
-  return (UuidMap g Map.empty)
+  return (UuidMap g updateId Map.empty)
 
-empty :: Random.StdGen -> (UuidMap a)
-empty g = UuidMap g Map.empty
+empty :: Random.StdGen -> (UUID.UUID -> a -> a) -> UuidMap a
+empty g updateId = UuidMap g updateId Map.empty
 
 lookup :: UUID.UUID -> UuidMap a -> Maybe a
 lookup uuid uuidMap = Map.lookup uuid (members uuidMap)
@@ -45,9 +49,10 @@ translate f uuidMap = uuidMap { members = members' }
   where members' = f (members uuidMap)
 
 insert :: a -> UuidMap a -> (UUID.UUID, UuidMap a)
-insert val uuidMap = (uuid, UuidMap gen' members')
+insert val uuidMap = (uuid, UuidMap gen' (updateId uuidMap) members')
   where (uuid, gen') = Random.random (gen uuidMap)
-        members' = Map.insert uuid val (members uuidMap)
+        val' = updateId uuidMap uuid val
+        members' = Map.insert uuid val' (members uuidMap)
 
 toList :: UuidMap a -> [(UUID.UUID, a)]
 toList uuidMap = Map.toList (members uuidMap)

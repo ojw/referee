@@ -15,19 +15,23 @@ import Referee.UuidMap as UuidMap
 
 type MatchmakingMap = UuidMap Matchmaking
 
+updateMatchmakingId :: MatchmakingId -> Matchmaking -> Matchmaking
+updateMatchmakingId uuid matchmaking = matchmaking { _matchmakingId = uuid }
+
+
 newMatchmakingMap :: IO (TVar MatchmakingMap)
 newMatchmakingMap = do
-  newMap <- emptyIO
+  newMap <- emptyIO updateMatchmakingId
   newTVarIO newMap
 
 joinById :: Player -> MatchmakingId -> MatchmakingServer -> MatchmakingServer
 joinById player match server = UuidMap.adjust (joinMatch player) match server
 
 createPublic :: Player -> MatchmakingServer -> (UUID, MatchmakingServer)
-createPublic player server = insert (Matchmaking 2 (Set.fromList [player]) Public) server
+createPublic player server = insert (Matchmaking 2 (Set.fromList [player]) Public UuidMap.nilId) server
 
 createPrivate :: Player -> MatchmakingServer -> (UUID, MatchmakingServer)
-createPrivate player server = insert (Matchmaking 2 (Set.fromList [player]) Private) server
+createPrivate player server = insert (Matchmaking 2 (Set.fromList [player]) Private UuidMap.nilId) server
 
 handleMatchmakingF :: TVar MatchmakingMap -> MatchmakingF a -> STM a
 handleMatchmakingF tvar matchmakingF = do
