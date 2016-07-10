@@ -52,16 +52,11 @@ loginServer interpretLogin interpretUser secret =
     -- ...also, this is why the HashedPassword constructor should not be exposed
     -- only a "smart constructor" that does the hashing
 
-    -- actually I didn't think about how bcrypt works
-    -- so we actually don't have to hash this guy right here
-
-    hashedPass <- return (HashedPassword (T.encodeUtf8 password)) -- teehee
-
     -- this piece is m
     -- initially I didn't like having to call translate here, but I'm okay with it now
     -- although I think translate might be the wrong word...
     -- the intention is more like "do the transactional thing now"
-    maybeLogin <- liftIO . translate . interpretLogin $ verifyCredentials username hashedPass
+    maybeLogin <- liftIO . translate . interpretLogin $ verifyCredentials username (T.encodeUtf8 password)
 
     -- not gonna lie, I'm in love with '??'
 
