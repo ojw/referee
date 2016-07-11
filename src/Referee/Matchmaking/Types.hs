@@ -7,6 +7,7 @@ import Control.Lens
 import Data.UUID (UUID(..))
 import Data.Maybe (listToMaybe)
 
+import Referee.User.Types
 import Referee.Common.Types
 import Referee.User.Types
 import Referee.UuidMap as UuidMap

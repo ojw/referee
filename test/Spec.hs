@@ -5,16 +5,18 @@ import qualified Data.Text as T
 import qualified Data.Set as Set
 import qualified Data.UUID as UUID
 
+import Data.UUID.V4
+
 import Referee.User
 import Referee.Matchmaking
 import Referee.Common.Types
-import qualified TestMatchmaking as MatchmakingTests
+-- import qualified TestMatchmaking as MatchmakingTests
 
 main :: IO ()
 main = hspec $ do
   userApiTest
   matchmakingApiTest
-  MatchmakingTests.main
+  -- MatchmakingTests.main
 
 userApiTest = do
   let sharedName = T.pack "some name"

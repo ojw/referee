@@ -11,30 +11,52 @@ import Network.Wai (Application, Request, requestHeaders)
 import qualified Data.UUID as UUID
 
 import Referee.User.Types (UserId)
+import Referee.Game.Types
+import Referee.Game.Api
 import Referee.Matchmaking.Types
 import Referee.Matchmaking.Api
 import Referee.Common.Types
 import qualified Referee.Authentication as Auth
 
+
 type MatchmakingRoutes = Auth.WithAuthentication
       ("join-random" :> Post '[JSON] UUID.UUID
   :<|> "create-public" :> Post '[JSON] UUID.UUID
   :<|> "create-private" :> Post '[JSON] UUID.UUID
-  :<|> "join" :> Capture "id" UUID.UUID :> Post '[JSON] Bool)
+  :<|> "join" :> Capture "id" UUID.UUID :> Post '[JSON] Bool
+  :<|> "start" :> Capture "id" MatchmakingId :> Post '[JSON] (Maybe GameId))
 
 matchmakingRoutes :: Proxy MatchmakingRoutes
 matchmakingRoutes = Proxy
 
 matchmakingServer
-  :: Translates m IO
+  :: (Monad m, Translates m IO)
   => Interpreter MatchmakingF m
+  -> Interpreter (GameF c s v) m
+  -> Rules c s v
   -> Server MatchmakingRoutes
-matchmakingServer interpret =
-       (\player -> (liftIO . translate . interpret) (Referee.Matchmaking.Api.joinRandom player))
-  :<|> (\player -> (liftIO . translate . interpret) (createMatchmaking Public))
-  :<|> (\player -> (liftIO . translate . interpret) (createMatchmaking Private))
-  :<|> (\player -> liftIO . translate . interpret . tryJoin player)
+matchmakingServer interpretMM interpretGame rules =
+       (\player -> (liftIO . translate . interpretMM) (Referee.Matchmaking.Api.joinRandom player))
+  :<|> (\player -> (liftIO . translate . interpretMM) (createMatchmaking Public))
+  :<|> (\player -> (liftIO . translate . interpretMM) (createMatchmaking Private))
+  :<|> (\player -> liftIO . translate . interpretMM . tryJoin player)
+  :<|> \player mmId -> liftIO . translate $ do
+         mmm <- interpretMM (getMatchmaking mmId)
+         case mmm of
+           Nothing -> return Nothing
+           Just mm -> do
+             maybeGameId <- interpretGame (create mm rules)
+             case maybeGameId of
+               Nothing -> return Nothing
+               Just gameId -> do
+                 interpretMM (closeMatchmaking mmId)
+                 return (Just gameId)
 
-matchmakingApplication :: Interpreter MatchmakingF IO -> Secret -> Application
-matchmakingApplication interpret secret =
-  serveWithContext matchmakingRoutes (Auth.getAuthContext secret) (matchmakingServer interpret)
+matchmakingApplication
+  :: (Monad m, Translates m IO)
+  => Interpreter MatchmakingF m
+  -> Interpreter (GameF c s v) m
+  -> Rules c s v
+  -> Secret
+  -> Application
+matchmakingApplication interpretMM interpretGame rules secret = serveWithContext matchmakingRoutes (Auth.getAuthContext secret)  (matchmakingServer interpretMM interpretGame rules)

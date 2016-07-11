@@ -8,6 +8,7 @@ import Control.Monad.IO.Class
 import Control.Monad.Free
 import Control.Monad.Free.TH
 
+import Referee.User.Types
 import Referee.Common.Types
 import Referee.User.Types
 import Referee.Matchmaking.Types

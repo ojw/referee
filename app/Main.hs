@@ -7,6 +7,7 @@ import Servant.JS
 import qualified Data.ByteString.Char8 as B
 
 import Referee
+import Referee.Examples.RockPaperScissors
 import qualified Referee.Config as Config
 
 main :: IO ()
@@ -28,9 +29,11 @@ main = do
       userMap <- newUserMap
       mmMap <- newMatchmakingMap
       loginMap <- newLoginMap
+      gameMap <- newGameMap
       let userHandler = inMemoryUserHandler userMap
           matchmakingHandler = inMemoryMatchmakingHandler mmMap
           loginHandler = inMemoryLoginHandler loginMap
-          allApp = allApplication userHandler matchmakingHandler loginHandler (Config._jwtSecret config) (Config._bcryptCost config)
+          gameHandler = inMemoryGameHandler gameMap
+          allApp = allApplication userHandler matchmakingHandler loginHandler gameHandler rpsRules (Config._jwtSecret config) (Config._bcryptCost config)
       -- run the app
       run 8081 allApp

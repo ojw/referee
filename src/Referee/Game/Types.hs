@@ -11,7 +11,7 @@ import Referee.User.Types
 type Time = Double
 
 -- way too simple; a placeholder
-data Outcome = Win | Loss | Draw
+data Outcome = WinnerIs UserId | Draw
 
 data Rules command state view = Rules
   { rulesTick    :: Time -> state -> state

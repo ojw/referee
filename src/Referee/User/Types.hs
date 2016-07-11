@@ -7,7 +7,7 @@ module Referee.User.Types where
 import GHC.Generics
 import qualified Data.Text as T
 import qualified Data.ByteString as B
-import Data.UUID (UUID)
+import Data.UUID (UUID, nil)
 import Data.Aeson.TH
 import Data.Aeson
 
@@ -40,5 +40,8 @@ data User = User
   , userEmail :: T.Text
   , userId :: UUID
   } deriving (Show, Eq)
+
+testUser :: UUID
+testUser = nil
 
 deriveJSON (defaultOptions {fieldLabelModifier = Utils.labelModifier}) ''User
