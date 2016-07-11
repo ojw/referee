@@ -60,6 +60,11 @@ handleMatchmakingF tvar matchmakingF = do
       let mms = UuidMap.toList matchmakingMap
           randoms = map fst . filter (\(_, mm) -> _matchmakingType mm == Random) $ mms
       return (cont randoms)
+    CloseMatchmaking mmId cont -> do
+      let success = UuidMap.member mmId matchmakingMap
+          mmMap' = update (\_ -> Nothing) mmId matchmakingMap
+      writeTVar tvar mmMap'
+      return (cont success)
 
 inMemoryMatchmakingHandler :: TVar MatchmakingMap -> Free MatchmakingF a -> STM a
 inMemoryMatchmakingHandler tvar = foldFree (handleMatchmakingF tvar)

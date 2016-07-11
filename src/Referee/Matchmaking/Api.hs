@@ -21,6 +21,10 @@ data MatchmakingF a where
   Join :: UserId -> MatchmakingId -> (Bool -> a) -> MatchmakingF a
   PublicMatches :: ([MatchmakingId] -> a) -> MatchmakingF a
   RandomMatches :: ([MatchmakingId] -> a) -> MatchmakingF a
+  -- this is the matchmaking half of starting a game
+  -- the game half lives in game api
+  -- I'm not really sure why this would fail
+  CloseMatchmaking :: MatchmakingId -> (Bool -> a) -> MatchmakingF a
 
 deriving instance Functor MatchmakingF
 
@@ -31,6 +35,7 @@ getMatchmaking :: MatchmakingId -> Free MatchmakingF (Maybe Matchmaking)
 join :: UserId -> MatchmakingId -> Free MatchmakingF Bool
 publicMatches :: Free MatchmakingF [MatchmakingId]
 randomMatches :: Free MatchmakingF [MatchmakingId]
+closeMatchmaking :: MatchmakingId -> Free MatchmakingF Bool
 
 tryJoin :: UserId -> MatchmakingId -> Free MatchmakingF Bool
 tryJoin player matchmakingId = do
