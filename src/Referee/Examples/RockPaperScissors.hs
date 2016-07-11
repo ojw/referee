@@ -2,6 +2,8 @@ module Referee.Examples.RockPaperScissors where
 
 import Data.Maybe (isJust)
 
+-- import Referee.Game
+
 data Throw = Rock | Paper | Scissors
   deriving Eq
 

@@ -5,11 +5,13 @@ module Referee
   ( inMemoryUserHandler
   , inMemoryMatchmakingHandler
   , inMemoryLoginHandler
+  , inMemoryGameHandler
   , allApplication
   , allRoutes
   , newUserMap
   , newMatchmakingMap
   , newLoginMap
+  , newGameMap
   , Translates(..)
   )
 
@@ -20,3 +22,4 @@ import Referee.User
 import Referee.Matchmaking
 import Referee.Login
 import Referee.Common.Types
+import Referee.Game

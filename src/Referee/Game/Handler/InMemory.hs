@@ -75,3 +75,6 @@ handleView :: GameId -> UserId -> Rules c s view -> GameMap s -> Maybe view
 handleView gameId userId rules gameMap = case UuidMap.lookup gameId gameMap of
   Nothing -> Nothing
   Just game -> rulesView rules (gameState game) userId
+
+inMemoryGameHandler :: TVar (GameMap s) -> Free (GameF c s v) a -> STM a
+inMemoryGameHandler tvar = foldFree (handleGameF tvar)
