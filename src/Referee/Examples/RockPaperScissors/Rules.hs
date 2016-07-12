@@ -1,8 +1,12 @@
-module Referee.Examples.RockPaperScissors where
+{-# LANGUAGE DeriveGeneric #-}
+
+module Referee.Examples.RockPaperScissors.Rules where
 
 import Data.Maybe (isNothing)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
+import Data.Aeson
+import GHC.Generics
 
 import Control.Lens -- because of typed hole complaints
 
@@ -12,14 +16,21 @@ import Referee.Game
 import Referee.User.Types (UserId)
 
 data Throw = Rock | Paper | Scissors
-  deriving Eq
+  deriving (Eq, Generic)
+
+instance ToJSON Throw
+instance FromJSON Throw
 
 data RPSState= RPSState
   { player1 :: (UserId, Maybe Throw)
   , player2 :: (UserId, Maybe Throw)
-  }
+  } deriving Generic
 
-data RPSPlayer = Player1 | Player2
+instance FromJSON RPSState
+
+data RPSPlayer = Player1 | Player2 deriving Generic
+
+instance ToJSON RPSPlayer
 
 type RPSCommand = (RPSPlayer, Throw)
 
