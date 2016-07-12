@@ -20,9 +20,9 @@ import qualified Referee.Authentication as Auth
 
 
 type MatchmakingRoutes = Auth.WithAuthentication
-      ("join-random" :> Post '[JSON] UUID.UUID
-  :<|> "create-public" :> Post '[JSON] UUID.UUID
-  :<|> "create-private" :> Post '[JSON] UUID.UUID
+      ("join-random" :> Post '[JSON] MatchmakingId
+  :<|> "create-public" :> Post '[JSON] MatchmakingId
+  :<|> "create-private" :> Post '[JSON] MatchmakingId
   :<|> "join" :> Capture "id" UUID.UUID :> Post '[JSON] Bool
   :<|> "start" :> Capture "id" MatchmakingId :> Post '[JSON] (Maybe GameId))
 
