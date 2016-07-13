@@ -22,24 +22,24 @@ newGameMap = do
   newMap <- emptyIO updateGameId
   newTVarIO newMap
 
-handleGameF :: TVar (GameMap s) -> GameF c s v a -> STM a
-handleGameF tvar gameF = do
+handleGameF :: TVar (GameMap s) -> Rules c s v -> GameF c s v a -> STM a
+handleGameF tvar rules gameF = do
   gameMap <- readTVar tvar
   case gameF of
-    Tick gameId time rules cont -> do
+    Tick gameId time cont -> do
       let (state, gameMap') = handleTick gameId time rules gameMap
       writeTVar tvar gameMap'
       return (cont state)
-    AddCommand gameId userId command rules cont -> do
+    AddCommand gameId userId command cont -> do
       let (success, gameMap') = handleAddCommand gameId userId command rules gameMap
       writeTVar tvar gameMap'
       return (cont success)
-    Outcome gameId rules cont -> return (cont (handleOutcome gameId rules gameMap))
-    Create matchmaking rules cont -> do
+    Outcome gameId cont -> return (cont (handleOutcome gameId rules gameMap))
+    Create matchmaking cont -> do
       let (mgameId, gameMap') = handleCreate matchmaking rules gameMap
       writeTVar tvar gameMap'
       return (cont mgameId)
-    View gameId userId rules cont -> return (cont (handleView gameId userId rules gameMap))
+    View gameId userId cont -> return (cont (handleView gameId userId rules gameMap))
 
 handleTick :: GameId -> Time -> Rules c state v -> GameMap state -> (Maybe state, GameMap state)
 handleTick gameId time rules gameMap = case UuidMap.lookup gameId gameMap of
@@ -76,5 +76,5 @@ handleView gameId userId rules gameMap = case UuidMap.lookup gameId gameMap of
   Nothing -> Nothing
   Just game -> rulesView rules (gameState game) userId
 
-inMemoryGameHandler :: TVar (GameMap s) -> Free (GameF c s v) a -> STM a
-inMemoryGameHandler tvar = foldFree (handleGameF tvar)
+inMemoryGameHandler :: TVar (GameMap s) -> Rules c s v -> Free (GameF c s v) a -> STM a
+inMemoryGameHandler tvar rules = foldFree (handleGameF tvar rules)

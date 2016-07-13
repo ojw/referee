@@ -16,7 +16,6 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Referee
-                     , Referee.Examples.RockPaperScissors
                      , Referee.Config
                      , Referee.User.Routes
                      , Referee.User.Handler.InMemory
@@ -45,6 +44,7 @@ library
                      , Referee.Game.Types
                      , Referee.Game.Handler.InMemory
                      , Referee.Game.Routes
+                     , Referee.Examples.RockPaperScissors.Rules
   build-depends:       base >= 4.7 && < 5
                      , servant
                      , servant-client

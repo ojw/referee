@@ -45,7 +45,7 @@ matchmakingServer interpretMM interpretGame rules =
          case mmm of
            Nothing -> return Nothing
            Just mm -> do
-             maybeGameId <- interpretGame (create mm rules)
+             maybeGameId <- interpretGame (create mm)
              case maybeGameId of
                Nothing -> return Nothing
                Just gameId -> do

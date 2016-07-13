@@ -15,20 +15,20 @@ import Referee.Matchmaking.Types (Matchmaking)
 import Referee.Game.Types
 
 data GameF command state view a where
-  Tick :: GameId -> Time -> Rules command state view -> (Maybe state -> a) -> GameF command state view a
+  Tick :: GameId -> Time -> (Maybe state -> a) -> GameF command state view a
   -- should probably use more descriptive errors than False
-  AddCommand :: GameId -> UserId -> command -> Rules command state view -> (Bool -> a) -> GameF command state view a
-  Outcome :: GameId -> Rules command state view -> (Maybe Outcome -> a) -> GameF command state view a
-  Create :: Matchmaking -> Rules command state view -> (Maybe GameId -> a) -> GameF command state view a
-  View :: GameId -> UserId -> Rules command state view -> (Maybe view -> a) -> GameF command state view a
+  AddCommand :: GameId -> UserId -> command -> (Bool -> a) -> GameF command state view a
+  Outcome :: GameId -> (Maybe Outcome -> a) -> GameF command state view a
+  Create :: Matchmaking -> (Maybe GameId -> a) -> GameF command state view a
+  View :: GameId -> UserId -> (Maybe view -> a) -> GameF command state view a
 
 deriving instance Functor (GameF command state view)
 
 makeFree_ ''GameF
 
 -- _c_ommand _s_tate _v_iew
-tick :: GameId -> Time -> Rules c s v -> Free (GameF c s v) (Maybe s)
-addCommand :: GameId -> UserId -> c -> Rules c s v -> Free (GameF c s v) Bool
-outcome :: GameId -> Rules c s v -> Free (GameF c s v) (Maybe Outcome)
-create :: Matchmaking -> Rules c s v -> Free (GameF c s v) (Maybe GameId)
-view :: GameId -> UserId -> Rules c s v -> Free (GameF c s v) (Maybe v)
+tick :: GameId -> Time -> Free (GameF c s v) (Maybe s)
+addCommand :: GameId -> UserId -> c -> Free (GameF c s v) Bool
+outcome :: GameId -> Free (GameF c s v) (Maybe Outcome)
+create :: Matchmaking -> Free (GameF c s v) (Maybe GameId)
+view :: GameId -> UserId -> Free (GameF c s v) (Maybe v)

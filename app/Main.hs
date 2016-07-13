@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Main where
 
 import Network.Wai.Handler.Warp
@@ -7,7 +5,7 @@ import Servant.JS
 import qualified Data.ByteString.Char8 as B
 
 import Referee
-import Referee.Examples.RockPaperScissors
+import Referee.Examples.RockPaperScissors.Rules
 import qualified Referee.Config as Config
 
 main :: IO ()
@@ -22,8 +20,7 @@ main = do
       putStrLn "Here's the complaint the config library threw:"
       putStrLn complaint
     Right config -> do
-      -- here is where we'd generate JS for calling the api, if Joe hadn't broken this
-      -- when adding Auth and chickend out when he saw the error message
+      -- generate javascript for calling the api
       -- writeJSForAPI allRoutes vanillaJS "api.js"
       -- initialize the various modules
       userMap <- newUserMap
@@ -33,7 +30,7 @@ main = do
       let userHandler = inMemoryUserHandler userMap
           matchmakingHandler = inMemoryMatchmakingHandler mmMap
           loginHandler = inMemoryLoginHandler loginMap
-          gameHandler = inMemoryGameHandler gameMap
+          gameHandler = inMemoryGameHandler gameMap rpsRules
           allApp = allApplication userHandler matchmakingHandler loginHandler gameHandler rpsRules (Config._jwtSecret config) (Config._bcryptCost config)
       -- run the app
       run 8081 allApp
