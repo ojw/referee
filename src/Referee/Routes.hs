@@ -46,13 +46,12 @@ allServer
   -> Interpreter MatchmakingF m2
   -> Interpreter LoginF m1
   -> Interpreter (GameF c s v) m2
-  -> Rules c s v
   -> Secret -- jwt secret hash
   -> Int -- bcrypt cost
   -> Server AllRoutes
-allServer userI matchmakingI loginI gameI rules secret cost =
+allServer userI matchmakingI loginI gameI secret cost =
        userServer userI loginI cost
-  :<|> matchmakingServer matchmakingI gameI rules
+  :<|> matchmakingServer matchmakingI gameI
   :<|> loginServer loginI secret
 
 allApplication
@@ -61,8 +60,7 @@ allApplication
   -> Interpreter MatchmakingF m2
   -> Interpreter LoginF m1
   -> Interpreter (GameF c s v) m2
-  -> Rules c s v
   -> Secret -- jwt secret hash
   -> Int -- bcrypt cost
   -> Application
-allApplication userI matchmakingI loginI gameI rules secret cost = serveWithContext allRoutes (Auth.getAuthContext secret) (allServer userI matchmakingI loginI gameI rules secret cost)
+allApplication userI matchmakingI loginI gameI secret cost = serveWithContext allRoutes (Auth.getAuthContext secret) (allServer userI matchmakingI loginI gameI secret cost)

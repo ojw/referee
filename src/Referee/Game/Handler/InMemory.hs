@@ -22,8 +22,8 @@ newGameMap = do
   newMap <- emptyIO updateGameId
   newTVarIO newMap
 
-handleGameF :: TVar (GameMap s) -> Rules c s v -> GameF c s v a -> STM a
-handleGameF tvar rules gameF = do
+handleGameF :: Rules c s v -> TVar (GameMap s) -> GameF c s v a -> STM a
+handleGameF rules tvar gameF = do
   gameMap <- readTVar tvar
   case gameF of
     Tick gameId time cont -> do
@@ -76,5 +76,5 @@ handleView gameId userId rules gameMap = case UuidMap.lookup gameId gameMap of
   Nothing -> Nothing
   Just game -> rulesView rules (gameState game) userId
 
-inMemoryGameHandler :: TVar (GameMap s) -> Rules c s v -> Free (GameF c s v) a -> STM a
-inMemoryGameHandler tvar rules = foldFree (handleGameF tvar rules)
+inMemoryGameHandler :: Rules c s v -> TVar (GameMap s) -> Free (GameF c s v) a -> STM a
+inMemoryGameHandler rules tvar = foldFree (handleGameF rules tvar)

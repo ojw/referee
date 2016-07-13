@@ -30,7 +30,7 @@ main = do
       let userHandler = inMemoryUserHandler userMap
           matchmakingHandler = inMemoryMatchmakingHandler mmMap
           loginHandler = inMemoryLoginHandler loginMap
-          gameHandler = inMemoryGameHandler gameMap rpsRules
-          allApp = allApplication userHandler matchmakingHandler loginHandler gameHandler rpsRules (Config._jwtSecret config) (Config._bcryptCost config)
+          gameHandler = inMemoryGameHandler rpsRules gameMap
+          allApp = allApplication userHandler matchmakingHandler loginHandler gameHandler (Config._jwtSecret config) (Config._bcryptCost config)
       -- run the app
       run 8081 allApp
