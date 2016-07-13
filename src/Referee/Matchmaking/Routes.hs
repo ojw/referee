@@ -33,9 +33,8 @@ matchmakingServer
   :: (Monad m, Translates m IO)
   => Interpreter MatchmakingF m
   -> Interpreter (GameF c s v) m
-  -> Rules c s v
   -> Server MatchmakingRoutes
-matchmakingServer interpretMM interpretGame rules =
+matchmakingServer interpretMM interpretGame =
        (\player -> (liftIO . translate . interpretMM) (Referee.Matchmaking.Api.joinRandom player))
   :<|> (\player -> (liftIO . translate . interpretMM) (createMatchmaking Public))
   :<|> (\player -> (liftIO . translate . interpretMM) (createMatchmaking Private))
@@ -56,7 +55,6 @@ matchmakingApplication
   :: (Monad m, Translates m IO)
   => Interpreter MatchmakingF m
   -> Interpreter (GameF c s v) m
-  -> Rules c s v
   -> Secret
   -> Application
-matchmakingApplication interpretMM interpretGame rules secret = serveWithContext matchmakingRoutes (Auth.getAuthContext secret)  (matchmakingServer interpretMM interpretGame rules)
+matchmakingApplication interpretMM interpretGame secret = serveWithContext matchmakingRoutes (Auth.getAuthContext secret)  (matchmakingServer interpretMM interpretGame)
