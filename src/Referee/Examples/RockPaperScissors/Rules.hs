@@ -27,9 +27,11 @@ data RPSState= RPSState
   } deriving Generic
 
 instance FromJSON RPSState
+instance ToJSON RPSState
 
 data RPSPlayer = Player1 | Player2 deriving Generic
 
+instance FromJSON RPSPlayer
 instance ToJSON RPSPlayer
 
 type RPSCommand = (RPSPlayer, Throw)

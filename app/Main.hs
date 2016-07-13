@@ -5,7 +5,7 @@ import Servant.JS
 import qualified Data.ByteString.Char8 as B
 
 import Referee
-import Referee.Examples.RockPaperScissors.Rules
+import Referee.Examples.RockPaperScissors
 import qualified Referee.Config as Config
 
 main :: IO ()
@@ -31,6 +31,8 @@ main = do
           matchmakingHandler = inMemoryMatchmakingHandler mmMap
           loginHandler = inMemoryLoginHandler loginMap
           gameHandler = inMemoryGameHandler rpsRules gameMap
-          allApp = allApplication userHandler matchmakingHandler loginHandler gameHandler (Config._jwtSecret config) (Config._bcryptCost config)
+          secret = Config._jwtSecret config
+          cost = Config._bcryptCost config
+          allApp = allApplication userHandler matchmakingHandler loginHandler gameHandler secret cost
       -- run the app
       run 8081 allApp
