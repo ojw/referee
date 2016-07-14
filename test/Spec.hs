@@ -10,12 +10,15 @@ import Data.UUID.V4
 import Referee.User
 import Referee.Matchmaking
 import Referee.Common.Types
+import Referee.Game
+import Referee.Examples.RockPaperScissors.Rules
 -- import qualified TestMatchmaking as MatchmakingTests
 
 main :: IO ()
 main = hspec $ do
   userApiTest
   matchmakingApiTest
+  endToEndTest
   -- MatchmakingTests.main
 
 userApiTest = do
@@ -77,3 +80,47 @@ matchmakingApiTest = do
     mmm <- interpret $ getMatchmaking mmId
     specify "After joining a random match, that match exists." $ do
       mmm `shouldSatisfy` Maybe.isJust
+
+endToEndTest = do
+  userMap <- runIO newUserMap
+  mmMap <- runIO newMatchmakingMap
+  gameMap <- runIO newGameMap
+  let userHandler = inMemoryUserHandler userMap
+      matchmakingHandler = inMemoryMatchmakingHandler mmMap
+      gameHandler = inMemoryGameHandler rpsRules gameMap
+      user1Registration = UserRegistration (T.pack "user1") (T.pack "email1@somewhere.com") (T.pack "password1")
+      user2Registration = UserRegistration (T.pack "user2") (T.pack "email2@somewhere.com") (T.pack "password2")
+  describe "Should be possible to register some users and then play some games." $ do
+    mUserId1 <- runIO . translate . userHandler $ registerUser user1Registration
+    mUserId2 <- runIO . translate . userHandler $ registerUser user2Registration
+    specify "User registration should work." $ do
+      mUserId1 `shouldSatisfy` Maybe.isJust
+      mUserId2 `shouldSatisfy` Maybe.isJust
+    let userId1 = Maybe.fromJust mUserId1
+        userId2 = Maybe.fromJust mUserId2
+    mmId <- runIO . translate . matchmakingHandler $ createMatchmaking Private
+    joined1 <- runIO . translate . matchmakingHandler $ join userId1 mmId
+    joined2 <- runIO . translate . matchmakingHandler $ join userId2 mmId
+    specify "Matchmaking was created and joined successfully." $ do
+      joined1 `shouldBe` True
+      joined2 `shouldBe` True
+    -- this bit of code would be nicer if I also provided a higher-level api
+    -- corresponding to the routes rather than just low-level functionality
+    Just mm <- runIO . translate . matchmakingHandler $ getMatchmaking mmId
+    mGameId <- runIO . translate . gameHandler $ create mm
+    specify "Can create a game from matchmaking." $ do
+      mGameId `shouldSatisfy` Maybe.isJust
+    let gameId = Maybe.fromJust mGameId
+    -- gotta awkwardly figure out which user is which player...
+    -- in the future this needs to be more deterministic
+    Just view <- runIO . translate . gameHandler $ view gameId userId1
+    let p1 = fst (player1 view)
+    let p2 = fst (player2 view)
+    addedCommand1 <- runIO . translate . gameHandler $ addCommand gameId p1 (Player1, Rock)
+    specify "Player 1's command worked." (addedCommand1 `shouldBe` True)
+    outcome1 <- runIO . translate . gameHandler $ outcome gameId
+    specify "Game isn't over yet..." (outcome1 `shouldSatisfy` Maybe.isNothing)
+    addedCommand2 <- runIO . translate . gameHandler $ addCommand gameId p2 (Player2, Paper)
+    specify "Player 2's command worked." (addedCommand2 `shouldBe` True)
+    outcome2 <- runIO . translate . gameHandler $ outcome gameId
+    specify "Player 1 should have won." (outcome2 `shouldBe` Just (WinnerIs p2))

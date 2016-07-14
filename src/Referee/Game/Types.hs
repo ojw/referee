@@ -12,6 +12,7 @@ type Time = Double
 
 -- way too simple; a placeholder
 data Outcome = WinnerIs UserId | Draw
+  deriving (Eq, Show)
 
 data Rules command state view = Rules
   { rulesTick    :: Time -> state -> state
