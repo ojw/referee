@@ -15,24 +15,25 @@ import Referee.Authentication as Auth
 import Referee.Game.Types
 import Referee.Game.Api
 
-type GameRoutes command state view = Auth.WithAuthentication
-      ("sendcommand" :> Capture "game" GameId :> ReqBody '[JSON] command :> Post '[JSON] Bool
-  :<|> "getstate" :> Capture "game" GameId :> Get '[JSON] (Maybe view))
+type GameRoutes command state view =
+       Auth.Auth :> "sendcommand" :> Capture "game" GameId :> ReqBody '[JSON] command :> Post '[JSON] Bool
+  :<|> Auth.Auth :> "getstate" :> Capture "game" GameId :> Get '[JSON] (Maybe view)
 
 gameRoutes :: Proxy (GameRoutes c s v)
 gameRoutes = Proxy
 
 gameServer
   :: Translates m IO
-  => Interpreter (GameF c s v) m
+  => Secret
+  -> Interpreter (GameF c s v) m
   -> Server (GameRoutes c s v)
-gameServer interpretGame =
-       (\player gameId command -> (liftIO . translate . interpretGame) (addCommand gameId player command))
-  :<|> (\player gameId -> (liftIO . translate . interpretGame) (view gameId player))
+gameServer secret interpretGame =
+       Auth.withAuth3 secret (\player gameId command -> (liftIO . translate . interpretGame) (addCommand gameId player command))
+  :<|> Auth.withAuth2 secret (\player gameId -> (liftIO . translate . interpretGame) (view gameId player))
 
 gameApplication
   :: (Translates m IO, ToJSON v, FromJSON c)
   => Interpreter (GameF c s v) m
   -> Secret
   -> Application
-gameApplication interpreter secret = serveWithContext gameRoutes (Auth.getAuthContext secret) (gameServer interpreter)
+gameApplication interpreter secret = serve gameRoutes (gameServer secret interpreter)

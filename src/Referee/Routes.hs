@@ -51,7 +51,7 @@ allServer
   -> Server AllRoutes
 allServer userI matchmakingI loginI gameI secret cost =
        userServer userI loginI cost
-  :<|> matchmakingServer matchmakingI gameI
+  :<|> matchmakingServer secret matchmakingI gameI
   :<|> loginServer loginI secret
 
 allApplication
@@ -63,4 +63,5 @@ allApplication
   -> Secret -- jwt secret hash
   -> Int -- bcrypt cost
   -> Application
-allApplication userI matchmakingI loginI gameI secret cost = serveWithContext allRoutes (Auth.getAuthContext secret) (allServer userI matchmakingI loginI gameI secret cost)
+allApplication userI matchmakingI loginI gameI secret cost =
+  serve allRoutes (allServer userI matchmakingI loginI gameI secret cost)

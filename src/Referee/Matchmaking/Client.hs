@@ -13,32 +13,32 @@ import Referee.Matchmaking.Routes
 import Referee.Authentication
 
 joinRandom
-  :: AuthenticateReq (AuthProtect "jwt-user-auth")
+  :: ClientAuth
   -> Manager
   -> BaseUrl
   -> ClientM MatchmakingId
 
 createPublic
-  :: AuthenticateReq (AuthProtect "jwt-user-auth")
+  :: ClientAuth
   -> Manager
   -> BaseUrl
   -> ClientM MatchmakingId
 
 createPrivate
-  :: AuthenticateReq (AuthProtect "jwt-user-auth")
+  :: ClientAuth
   -> Manager
   -> BaseUrl
   -> ClientM MatchmakingId
 
 join
-  :: AuthenticateReq (AuthProtect "jwt-user-auth")
+  :: ClientAuth
   -> MatchmakingId
   -> Manager
   -> BaseUrl
   -> ClientM Bool
 
 start
-  :: AuthenticateReq (AuthProtect "jwt-user-auth")
+  :: ClientAuth
   -> MatchmakingId
   -> Manager
   -> BaseUrl
