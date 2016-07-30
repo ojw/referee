@@ -29,15 +29,18 @@ library
                      , Referee.Matchmaking.Handler.InMemory
                      , Referee.Matchmaking.Api
                      , Referee.Matchmaking.Types
+                     , Referee.Matchmaking.Server
                      , Referee.Routes
                      , Referee.Common.Types
                      , Referee.User.Client
+                     , Referee.User.Server
                      , Referee.Matchmaking.Client
                      , Referee.Login
                      , Referee.Login.Routes
                      , Referee.Login.Handler.InMemory
                      , Referee.Login.Api
                      , Referee.Login.Types
+                     , Referee.Login.Server
                      , Referee.Authentication
                      , Referee.Game
                      , Referee.Game.Api

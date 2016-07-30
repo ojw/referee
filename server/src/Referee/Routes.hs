@@ -21,8 +21,10 @@ import Referee.UuidMap
 
 import Referee.User.Routes
 import Referee.User.Api
+import Referee.User.Server
 import Referee.Matchmaking.Routes
 import Referee.Matchmaking.Api
+import Referee.Matchmaking.Server
 import Referee.Login.Routes
 import Referee.Login.Api
 import Referee.Common.Types
@@ -30,6 +32,7 @@ import qualified Referee.Authentication as Auth
 import Referee.Game.Api
 import Referee.Game.Routes
 import Referee.Game.Types
+import Referee.Login.Server
 
 
 type AllRoutes =
