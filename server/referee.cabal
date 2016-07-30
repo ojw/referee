@@ -47,10 +47,12 @@ library
                      , Referee.Game.Types
                      , Referee.Game.Handler.InMemory
                      , Referee.Game.Routes
+                     , Referee.Game.Server
                      , Referee.Examples.RockPaperScissors
                      , Referee.Examples.RockPaperScissors.Rules
                      , Referee.Examples.RockPaperScissors.Server
   build-depends:       base >= 4.7 && < 5
+                     , referee-common
                      , servant
                      , servant-client
                      , servant-server

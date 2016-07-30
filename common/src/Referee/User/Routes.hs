@@ -15,10 +15,8 @@ import Data.ByteString.Lazy.Char8 as Char8
 
 import Referee.Common.Types
 import Referee.User.Types
-import Referee.User.Api
 
 import Referee.Login.Types
-import Referee.Login.Api
 
 type UserRoutes =
        "register" :> ReqBody '[JSON] (UserRegistration T.Text) :> Post '[JSON] (Maybe UserId)

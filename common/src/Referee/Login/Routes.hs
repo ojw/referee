@@ -11,7 +11,6 @@ import Jose.Jwt
 
 import Referee.Common.Types
 import Referee.Login.Types
-import Referee.Login.Api
 
 -- will return a servant error on auth failure
 type LoginRoutes =
