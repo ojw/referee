@@ -16,6 +16,7 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src, ../common/src
   exposed-modules:     Referee.Client
+                     , Referee.User.Widgets
   other-modules:       Servant.Common.BaseUrl
                      , Servant.Common.Req
                      , Servant.Reflex
@@ -31,6 +32,16 @@ library
                      , text
                      , reflex
                      , reflex-dom
+
+                     -- for common?
+                     -- some of this has to be unnecessary
+                     , free
+                     , stm
+                     , cryptonite
+                     , servant-server
+                     , wai
+
+                     -- for servant-reflex?
                      , string-conversions
                      , case-insensitive
                      , bytestring
