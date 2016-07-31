@@ -1,0 +1,51 @@
+name:                referee-client
+version:             0.1.0.0
+synopsis:            Common modules for referee server and client.
+description:         Please see README.md
+homepage:            https://github.com/ojw/referee#readme
+license:             BSD3
+license-file:        LICENSE
+author:              James Orr
+maintainer:          orrjamesw@gmail.com
+copyright:           Copyright: (c) 2016 James Orr
+category:            Development
+build-type:          Simple
+-- extra-source-files:
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src, ../common/src
+  exposed-modules:     Referee.Client
+  build-depends:       base >= 4.7 && < 5
+                     , servant
+                     , containers
+                     , lens
+                     , uuid
+                     , transformers
+                     , aeson
+                     , errors
+                     , text
+                     , reflex
+                     , reflex-dom
+                     , string-conversions
+                     , case-insensitive
+                     , bytestring
+                     , safe
+                     , network-uri
+                     , exceptions
+                     , http-api-data
+                     , http-media
+  default-language:    Haskell2010
+
+executable referee-client-exe
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , referee-client
+                     , reflex-dom
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/ojw/referee
