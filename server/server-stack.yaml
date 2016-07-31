@@ -1,0 +1,11 @@
+resolver: lts-6.7
+
+packages:
+- '.'
+- '../common'
+
+extra-deps: # []
+
+flags: {}
+
+extra-package-dbs: []

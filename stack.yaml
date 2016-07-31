@@ -15,7 +15,7 @@
 # resolver:
 #  name: custom-snapshot
 #  location: "./custom-snapshot.yaml"
-resolver: lts-6.6
+resolver: lts-6.7
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -38,9 +38,15 @@ resolver: lts-6.6
 packages:
 - './server'
 - './common'
+- './client' # adding client here helps intero
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
-extra-deps: []
+extra-deps: # []
+  - haskell-src-exts-1.16.0.1
+  - ref-tf-0.4
+  - reflex-0.4.0
+  - reflex-dom-0.3
+  - hlint-1.9.35
 
 # Override default flag values for local packages and extra-deps
 flags: {}

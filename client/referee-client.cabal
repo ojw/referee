@@ -16,6 +16,9 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src, ../common/src
   exposed-modules:     Referee.Client
+  other-modules:       Servant.Common.BaseUrl
+                     , Servant.Common.Req
+                     , Servant.Reflex
   build-depends:       base >= 4.7 && < 5
                      , servant
                      , containers
