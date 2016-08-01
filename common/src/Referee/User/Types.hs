@@ -25,7 +25,7 @@ data UserRegistration password = UserRegistration
   -- from the web, this'll be T.Text;
   -- internally, this'll be immediately converted to a HashedPassword
   , registrationPassword :: password
-  } deriving Generic
+  } deriving (Show, Generic)
 
 -- I should probably write this instance by hand
 instance FromJSON (UserRegistration T.Text)

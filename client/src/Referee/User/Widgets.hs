@@ -1,4 +1,6 @@
 {-# LANGUAGE MultiWayIf #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Referee.User.Widgets where
 
@@ -7,8 +9,11 @@ import Reflex.Dom
 import Servant.Reflex
 import Servant.API
 import Data.Proxy
+import qualified Data.Text as T
 import Data.Maybe (fromJust, isJust)
+import Control.Error
 
+import Referee.User.Types
 import Referee.User.Routes
 
 data PasswordError = InputsDontMatch | FailsPolicy String deriving Show
@@ -18,7 +23,7 @@ data PasswordError = InputsDontMatch | FailsPolicy String deriving Show
 -- policy should return Nothing if the password is valid,
 -- or Just errorMessage otherwise.
 -- Should take some kind of options object for e.g. classes on the inputs.
-passwordWidget :: MonadWidget t m => (String -> Maybe String) -> m (Dynamic t (Either PasswordError String))
+passwordWidget :: MonadWidget t m => (String -> Maybe String) -> m (Dynamic t (Either PasswordError T.Text))
 passwordWidget policy = do
   text "Password"
   passwordInput <- textInput (def { _textInputConfig_inputType = "password"})
@@ -33,7 +38,7 @@ passwordWidget policy = do
   passwordResult <- combineDyn (\match input ->
     if | not match -> Left InputsDontMatch
        | isJust (policy input) -> Left (FailsPolicy (fromJust (policy input)))
-       | otherwise -> Right input) inputsMatch inputVal
+       | otherwise -> Right (T.pack input)) inputsMatch inputVal
 
   return passwordResult
 
@@ -49,29 +54,29 @@ demoEmailPolicy inputEmail = Nothing
 
 data NameError = NameTaken | FailsNamePolicy String deriving Show
 
-nameWidget :: MonadWidget t m => (String -> Maybe String) -> m (Dynamic t (Either NameError String))
+nameWidget :: MonadWidget t m => (String -> Maybe String) -> m (Dynamic t (Either NameError T.Text))
 nameWidget policy = do
   text "User Name"
   nameInput <- textInput def
   let nameVal = _textInput_value nameInput
   nameResult <- mapDyn (\input ->
     if | isJust (policy input) -> Left (FailsNamePolicy (fromJust (policy input)))
-       | otherwise -> Right input) nameVal
+       | otherwise -> Right (T.pack input)) nameVal
   return nameResult
 
 data EmailError = EmailTaken | FailsEmailPolicy String deriving Show
 
-emailWidget :: MonadWidget t m => (String -> Maybe String) -> m (Dynamic t (Either EmailError String))
+emailWidget :: MonadWidget t m => (String -> Maybe String) -> m (Dynamic t (Either EmailError T.Text))
 emailWidget policy = do
   text "Email"
   emailInput <- textInput def
   let emailVal = _textInput_value emailInput
   emailResult <- mapDyn (\input ->
     if | isJust (policy input) -> Left (FailsEmailPolicy (fromJust (policy input)))
-       | otherwise -> Right input) emailVal
+       | otherwise -> Right (T.pack input)) emailVal
   return emailResult
 
-registerWidget :: MonadWidget t m => m ()
+registerWidget :: (MonadWidget t m, MonadHold t m) => m ()
 registerWidget = do
   let (register :<|> getUsers :<|> getUser :<|> checkName) =
         client
@@ -84,9 +89,20 @@ registerWidget = do
     emailResult <- emailWidget demoEmailPolicy
     passwordResult <- passwordWidget demoPWPolicy
 
+    -- woops, gotta hush these eithers because they all have different error types
+    reg <- $(qDyn [| UserRegistration <$>
+                    hush $(unqDyn [|nameResult|]) <*>
+                    hush $(unqDyn [|emailResult|]) <*>
+                    hush $(unqDyn [|passwordResult|])|])
+
+    reg' <- mapDyn (Control.Error.note "foo") reg
+
     registerButton <- button "register"
 
-    users <- getUsers registerButton
+    regResult <- register (current reg') registerButton
+
+    reqShow <- mapDyn show reg'
+    dynText reqShow
 
     pwShow <- mapDyn show passwordResult
     dynText pwShow
