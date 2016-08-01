@@ -23,6 +23,7 @@ type PlaintextPassword = String
 -- and has a value that's Just password if they match and pass the policy function.
 -- policy should return Nothing if the password is valid,
 -- or Just errorMessage otherwise.
+-- Should take some kind of options object for e.g. classes on the inputs.
 passwordWidget :: MonadWidget t m => (String -> Maybe String) -> m (Dynamic t PasswordResult)
 passwordWidget policy = do
   passwordInput <- textInput (def { _textInputConfig_inputType = "password"})
@@ -32,8 +33,7 @@ passwordWidget policy = do
       confirmVal = _textInput_value passwordConfirm
 
   inputsMatch <- combineDyn (==) inputVal confirmVal
-  policyResult <- mapDyn policy inputVal
-  -- validInput <- combineDyn (\match input -> if match  && policy input then Just input else Nothing) inputsMatch inputVal
+
   passwordResult <- combineDyn (\match input ->
     if | not match -> InvalidPW InputsDontMatch
        | isJust (policy input) -> InvalidPW (FailsPolicy (fromJust (policy input)))
@@ -59,5 +59,3 @@ registerWidget = do
 
   pwShow <- mapDyn show regPassword
   dynText pwShow
-
-  return ()
