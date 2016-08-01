@@ -14,5 +14,4 @@ import Referee.User.Widgets
 
 runGUI :: MonadWidget t m => m ()
 runGUI = do
-  text "hello"
   registerWidget

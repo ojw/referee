@@ -26,7 +26,9 @@ type PlaintextPassword = String
 -- Should take some kind of options object for e.g. classes on the inputs.
 passwordWidget :: MonadWidget t m => (String -> Maybe String) -> m (Dynamic t PasswordResult)
 passwordWidget policy = do
+  text "Password"
   passwordInput <- textInput (def { _textInputConfig_inputType = "password"})
+  text "Confirm Password"
   passwordConfirm <- textInput (def { _textInputConfig_inputType = "password"})
 
   let inputVal = _textInput_value passwordInput
@@ -41,6 +43,42 @@ passwordWidget policy = do
 
   return passwordResult
 
+demoPWPolicy :: String -> Maybe String
+demoPWPolicy inputPassword = if length inputPassword < 8 then Just "Gotta be 8 characters long" else Nothing
+
+demoNamePolicy :: String -> Maybe String
+demoNamePolicy inputName = if length inputName < 4 then Just "Gotta be 4 characters long" else Nothing
+
+-- Not gonna attempt proper validation, but checking for an "@" couldn't hurt.
+demoEmailPolicy :: String -> Maybe String
+demoEmailPolicy inputEmail = Nothing
+
+data NameError = NameTaken | FailsNamePolicy String
+data NameResult = ValidName String | InvalidName NameError
+
+nameWidget :: MonadWidget t m => (String -> Maybe String) -> m (Dynamic t NameResult)
+nameWidget policy = do
+  text "User Name"
+  nameInput <- textInput def
+  let nameVal = _textInput_value nameInput
+  nameResult <- mapDyn (\input ->
+    if | isJust (policy input) -> InvalidName (FailsNamePolicy (fromJust (policy input)))
+       | otherwise -> ValidName input) nameVal
+  return nameResult
+
+data EmailError = EmailTaken | FailsEmailPolicy String
+data EmailResult = ValidEmail String | InvalidEmail EmailError
+
+emailWidget :: MonadWidget t m => (String -> Maybe String) -> m (Dynamic t EmailResult)
+emailWidget policy = do
+  text "Email"
+  emailInput <- textInput def
+  let emailVal = _textInput_value emailInput
+  emailResult <- mapDyn (\input ->
+    if | isJust (policy input) -> InvalidEmail (FailsEmailPolicy (fromJust (policy input)))
+       | otherwise -> ValidEmail input) emailVal
+  return emailResult
+
 registerWidget :: MonadWidget t m => m ()
 registerWidget = do
   let (register :<|> getUsers :<|> getUser :<|> checkName) =
@@ -49,13 +87,14 @@ registerWidget = do
         Proxy
         (constDyn (BaseFullUrl Http "localhost" 8080 ""))
 
-  regNameInput <- textInput def
-  regEmailInput <- textInput def
-  regPassword <- passwordWidget (const Nothing)
+  divClass "registration" $ do
+    nameResult <- nameWidget demoNamePolicy
+    emailResult <- emailWidget demoEmailPolicy
+    passwordResult <- passwordWidget demoPWPolicy
 
-  registerButton <- button "register"
+    registerButton <- button "register"
 
-  users <- getUsers registerButton
+    users <- getUsers registerButton
 
-  pwShow <- mapDyn show regPassword
-  dynText pwShow
+    pwShow <- mapDyn show passwordResult
+    dynText pwShow
