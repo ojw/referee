@@ -11,20 +11,14 @@ import Data.Maybe (fromJust, isJust)
 
 import Referee.User.Routes
 
-data PasswordError = InputsDontMatch | FailsPolicy String
-  deriving Show
-
-data PasswordResult = ValidPW PlaintextPassword | InvalidPW PasswordError
-  deriving Show
-
-type PlaintextPassword = String
+data PasswordError = InputsDontMatch | FailsPolicy String deriving Show
 
 -- | passwordWidget sticks two password inputs into the DOM
--- and has a value that's Just password if they match and pass the policy function.
+-- and has a value that's Right password if they match and pass the policy function.
 -- policy should return Nothing if the password is valid,
 -- or Just errorMessage otherwise.
 -- Should take some kind of options object for e.g. classes on the inputs.
-passwordWidget :: MonadWidget t m => (String -> Maybe String) -> m (Dynamic t PasswordResult)
+passwordWidget :: MonadWidget t m => (String -> Maybe String) -> m (Dynamic t (Either PasswordError String))
 passwordWidget policy = do
   text "Password"
   passwordInput <- textInput (def { _textInputConfig_inputType = "password"})
@@ -37,9 +31,9 @@ passwordWidget policy = do
   inputsMatch <- combineDyn (==) inputVal confirmVal
 
   passwordResult <- combineDyn (\match input ->
-    if | not match -> InvalidPW InputsDontMatch
-       | isJust (policy input) -> InvalidPW (FailsPolicy (fromJust (policy input)))
-       | otherwise -> ValidPW input) inputsMatch inputVal
+    if | not match -> Left InputsDontMatch
+       | isJust (policy input) -> Left (FailsPolicy (fromJust (policy input)))
+       | otherwise -> Right input) inputsMatch inputVal
 
   return passwordResult
 
@@ -53,30 +47,28 @@ demoNamePolicy inputName = if length inputName < 4 then Just "Gotta be 4 charact
 demoEmailPolicy :: String -> Maybe String
 demoEmailPolicy inputEmail = Nothing
 
-data NameError = NameTaken | FailsNamePolicy String
-data NameResult = ValidName String | InvalidName NameError
+data NameError = NameTaken | FailsNamePolicy String deriving Show
 
-nameWidget :: MonadWidget t m => (String -> Maybe String) -> m (Dynamic t NameResult)
+nameWidget :: MonadWidget t m => (String -> Maybe String) -> m (Dynamic t (Either NameError String))
 nameWidget policy = do
   text "User Name"
   nameInput <- textInput def
   let nameVal = _textInput_value nameInput
   nameResult <- mapDyn (\input ->
-    if | isJust (policy input) -> InvalidName (FailsNamePolicy (fromJust (policy input)))
-       | otherwise -> ValidName input) nameVal
+    if | isJust (policy input) -> Left (FailsNamePolicy (fromJust (policy input)))
+       | otherwise -> Right input) nameVal
   return nameResult
 
-data EmailError = EmailTaken | FailsEmailPolicy String
-data EmailResult = ValidEmail String | InvalidEmail EmailError
+data EmailError = EmailTaken | FailsEmailPolicy String deriving Show
 
-emailWidget :: MonadWidget t m => (String -> Maybe String) -> m (Dynamic t EmailResult)
+emailWidget :: MonadWidget t m => (String -> Maybe String) -> m (Dynamic t (Either EmailError String))
 emailWidget policy = do
   text "Email"
   emailInput <- textInput def
   let emailVal = _textInput_value emailInput
   emailResult <- mapDyn (\input ->
-    if | isJust (policy input) -> InvalidEmail (FailsEmailPolicy (fromJust (policy input)))
-       | otherwise -> ValidEmail input) emailVal
+    if | isJust (policy input) -> Left (FailsEmailPolicy (fromJust (policy input)))
+       | otherwise -> Right input) emailVal
   return emailResult
 
 registerWidget :: MonadWidget t m => m ()
