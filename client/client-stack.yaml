@@ -12,3 +12,8 @@ extra-deps:
 flags: {}
 extra-package-dbs: []
 compiler: ghcjs-0.2.0_ghc-7.10.3
+
+# nix:
+#   packages: []
+#   enable: true
+#   shell-file: shell.nix
