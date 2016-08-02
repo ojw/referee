@@ -8,6 +8,7 @@ import Referee
 import Referee.Examples.RockPaperScissors
 import Referee.Config (Config)
 import qualified Referee.Config as Config
+import Data.Monoid ((<>))
 
 runApp :: Config -> IO ()
 runApp config = do
@@ -21,7 +22,9 @@ runApp config = do
       gameHandler = inMemoryGameHandler rpsRules gameMap
       secret = Config._jwtSecret config
       cost = Config._bcryptCost config
-      allApp = allApplication userHandler matchmakingHandler loginHandler gameHandler secret cost
+      staticDir = Config._staticDir config
+      allApp = allApplication userHandler matchmakingHandler loginHandler gameHandler secret cost staticDir
+  putStrLn ("Serving assets from " <> staticDir)
   run 8081 allApp
 
 main :: IO ()

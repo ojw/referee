@@ -82,7 +82,11 @@ registerWidget = do
         client
         userRoutes
         Proxy
-        (constDyn (BaseFullUrl Http "localhost" 8080 ""))
+        -- the hardcoded user bit sucks
+        -- to know what path segment the user api is mounted on,
+        -- we would have to generate clients for the full api
+        -- (since that's the big that knows the path to each api piece)
+        (constDyn (BaseFullUrl Http "localhost" 8081 "user"))
 
   divClass "registration" $ do
     nameResult <- nameWidget demoNamePolicy
@@ -101,8 +105,29 @@ registerWidget = do
 
     regResult <- register (current reg') registerButton
 
+    let showXhrResponse xhrResponseBody = case xhrResponseBody of
+          Just (XhrResponseBody_Default t) -> show t
+          Just (XhrResponseBody_Text t) -> show t
+          Just (XhrResponseBody_Blob blob) -> "uh, it's a blob"
+          Just (XhrResponseBody_ArrayBuffer b) -> show b
+          Nothing -> "friggin nothing"
+
+    let parseReq reqResult = case reqResult of
+          ResponseSuccess a xhrResponse -> "woo"
+          ResponseFailure s xhrResponse -> "response failure: " ++ s ++ "|" ++ show (_xhrResponse_responseText xhrResponse) ++ "|" ++ show (_xhrResponse_statusText xhrResponse) ++ "|" ++ showXhrResponse (_xhrResponse_response xhrResponse)
+          RequestFailure s -> "request failure: " ++ s
+
+    el "br" (return ())
+
+    r <- holdDyn "Waiting" $ fmap parseReq regResult
+    dynText r
+
+    el "br" (return ())
+
     reqShow <- mapDyn show reg'
     dynText reqShow
+
+    el "br" (return ())
 
     pwShow <- mapDyn show passwordResult
     dynText pwShow

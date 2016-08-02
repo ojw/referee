@@ -78,7 +78,7 @@ library
                      , cryptonite
   default-language:    Haskell2010
 
-executable referee-exe
+executable referee-server
   hs-source-dirs:      app
   main-is:             Main.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N

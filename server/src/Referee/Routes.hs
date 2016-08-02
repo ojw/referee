@@ -39,6 +39,7 @@ type AllRoutes =
        "user" :> UserRoutes
   :<|> "matchmaking" :> MatchmakingRoutes
   :<|> "login" :> LoginRoutes
+  :<|> "client" :> Raw -- for the client assets
 
 allRoutes :: Proxy AllRoutes
 allRoutes = Proxy
@@ -51,11 +52,13 @@ allServer
   -> Interpreter (GameF c s v) m2
   -> Secret -- jwt secret hash
   -> Int -- bcrypt cost
+  -> FilePath -- static assets
   -> Server AllRoutes
-allServer userI matchmakingI loginI gameI secret cost =
+allServer userI matchmakingI loginI gameI secret cost staticDir =
        userServer userI loginI cost
   :<|> matchmakingServer secret matchmakingI gameI
   :<|> loginServer loginI secret
+  :<|> serveDirectory staticDir -- wow this should be configured somewhere
 
 allApplication
   :: (Monad m1, Monad m2, Translates m1 IO, Translates m2 IO)
@@ -65,6 +68,7 @@ allApplication
   -> Interpreter (GameF c s v) m2
   -> Secret -- jwt secret hash
   -> Int -- bcrypt cost
+  -> FilePath -- static assets
   -> Application
-allApplication userI matchmakingI loginI gameI secret cost =
-  serve allRoutes (allServer userI matchmakingI loginI gameI secret cost)
+allApplication userI matchmakingI loginI gameI secret cost staticDir =
+  serve allRoutes (allServer userI matchmakingI loginI gameI secret cost staticDir)
