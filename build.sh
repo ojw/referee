@@ -1,6 +1,8 @@
 #! /usr/bin/env sh
 
 stack build --stack-yaml=server/server-stack.yaml
-stack build --stack-yaml=client/client-stack.yaml
 
-cp -r client/.stack-work/dist/x86_64-linux/Cabal-1.24.0.0_ghcjs/build/referee-client-exe/referee-client-exe.jsexe/* static/
+rm -f static/all.js
+cp -r $(stack path --stack-yaml=client/client-stack.yaml --local-install-root)/bin/referee-client-exe.jsexe/all.js static/all.js
+
+stack build --stack-yaml=client/client-stack.yaml
