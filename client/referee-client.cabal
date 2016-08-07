@@ -18,14 +18,12 @@ library
   exposed-modules:     Referee.Client
                      , Referee.User.Widgets
                      , Referee.Login.Widgets
-  other-modules:       Servant.Common.BaseUrl
-                     , Servant.Common.Req
-                     , Servant.Reflex
-                     , Referee.Common.Types
+  other-modules:       Referee.Common.Types
                      , Referee.User.Types
   build-depends:       base >= 4.7 && < 5
                      , referee-common
                      , servant
+                     , servant-reflex
                      , containers
                      , lens
                      , uuid

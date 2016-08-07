@@ -3,6 +3,9 @@ resolver: lts-6.7
 packages:
 - '.'
 - '../common'
+- location:
+    git: https://github.com/ojw/servant-reflex.git
+    commit: 618f5e2065c9ad7f3c21e8489f3b162f3531ebbc
 extra-deps:
   - haskell-src-exts-1.16.0.1
   - ref-tf-0.4
