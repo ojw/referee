@@ -34,6 +34,10 @@ library
                      , text
                      , reflex
                      , reflex-dom
+                     , jose-jwt
+
+                     , servant-client
+                     , random
 
                      -- for common?
                      -- some of this has to be unnecessary

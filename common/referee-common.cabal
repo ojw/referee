@@ -27,6 +27,7 @@ library
                      , Referee.Authentication
                      , Referee.Game.Types
                      , Referee.Game.Routes
+                     , Referee.Routes
   build-depends:       base >= 4.7 && < 5
                      , servant
                      , servant-client

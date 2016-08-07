@@ -76,18 +76,12 @@ emailWidget policy = do
        | otherwise -> Right (T.pack input)) emailVal
   return emailResult
 
-registerWidget :: (MonadWidget t m, MonadHold t m) => m ()
-registerWidget = do
-  let (register :<|> getUsers :<|> getUser :<|> checkName) =
-        client
-        userRoutes
-        Proxy
-        -- the hardcoded user bit sucks
-        -- to know what path segment the user api is mounted on,
-        -- we would have to generate clients for the full api
-        -- (since that's the big that knows the path to each api piece)
-        (constDyn (BaseFullUrl Http "localhost" 8081 "user"))
-
+registerWidget
+  :: (MonadWidget t m, MonadHold t m)
+  => (Behavior t (Either String (UserRegistration T.Text))
+     -> Event t () -> m (Event t (ReqResult (Maybe UserId))))
+  -> m ()
+registerWidget register = do
   divClass "registration" $ do
     nameResult <- nameWidget demoNamePolicy
     emailResult <- emailWidget demoEmailPolicy

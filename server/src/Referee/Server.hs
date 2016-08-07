@@ -3,7 +3,7 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE FlexibleContexts #-}
 
-module Referee.Routes
+module Referee.Server
 
   ( AllRoutes
   , allRoutes
@@ -34,15 +34,7 @@ import Referee.Game.Routes
 import Referee.Game.Types
 import Referee.Login.Server
 
-
-type AllRoutes =
-       "user" :> UserRoutes
-  :<|> "matchmaking" :> MatchmakingRoutes
-  :<|> "login" :> LoginRoutes
-  :<|> "client" :> Raw -- for the client assets
-
-allRoutes :: Proxy AllRoutes
-allRoutes = Proxy
+import Referee.Routes
 
 allServer
   :: (Monad m1, Monad m2, Translates m1 IO, Translates m2 IO)

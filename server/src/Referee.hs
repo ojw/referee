@@ -17,7 +17,7 @@ module Referee
 
 where
 
-import Referee.Routes
+import Referee.Server
 import Referee.User
 import Referee.Matchmaking
 import Referee.Login

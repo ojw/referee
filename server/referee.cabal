@@ -30,7 +30,7 @@ library
                      , Referee.Matchmaking.Api
                      , Referee.Matchmaking.Types
                      , Referee.Matchmaking.Server
-                     , Referee.Routes
+                     , Referee.Server
                      , Referee.Common.Types
                      , Referee.User.Client
                      , Referee.User.Server
