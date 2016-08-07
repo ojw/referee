@@ -22,11 +22,11 @@ runGUI
   -> m ()
 runGUI host port = do
   let (register :<|> getUsers :<|> getUser :<|> checkName)
-        :<|> mm :<|> lgn :<|> clnt =
+        :<|> mm :<|> login :<|> clnt =
         client
         allRoutes
         Proxy
         (constDyn (BaseFullUrl Http host port ""))
 
   registerWidget register
-  loginWidget
+  loginWidget login

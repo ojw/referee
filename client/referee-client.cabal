@@ -17,6 +17,7 @@ library
   hs-source-dirs:      src, ../common/src
   exposed-modules:     Referee.Client
                      , Referee.User.Widgets
+                     , Referee.Login.Widgets
   other-modules:       Servant.Common.BaseUrl
                      , Servant.Common.Req
                      , Servant.Reflex
