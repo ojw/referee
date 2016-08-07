@@ -77,9 +77,7 @@ prependToPathParts p req =
 
 addHeader :: (ToHttpApiData a, Reflex t) => String -> Behavior t (Either String a) -> Req t -> Req t
 addHeader name val req = req { headers = headers req
-                                         ++ [(name, fmap (unpack . toHeader) val)]
---                                      ++ [(name, (fmap . fmap) (decodeUtf8 . toHeader) val)]
-                             }
+  ++ [(name, fmap (unpack . either (\e -> "") (\s -> toHeader s)) val)] }
 
 -- * performing requests
 
