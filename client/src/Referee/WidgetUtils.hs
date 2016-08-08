@@ -12,6 +12,6 @@ showXhrResponse xhrResponseBody = case xhrResponseBody of
 
 
 parseReq reqResult = case reqResult of
-          ResponseSuccess a xhrResponse -> "woo"
+          ResponseSuccess a xhrResponse -> show (_xhrResponse_responseText xhrResponse)
           ResponseFailure s xhrResponse -> "response failure: " ++ s ++ "|" ++ show (_xhrResponse_responseText xhrResponse) ++ "|" ++ show (_xhrResponse_statusText xhrResponse) ++ "|" ++ showXhrResponse (_xhrResponse_response xhrResponse)
           RequestFailure s -> "request failure: " ++ s

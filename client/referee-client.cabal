@@ -20,6 +20,7 @@ library
                      , Referee.Login.Widgets
   other-modules:       Referee.Common.Types
                      , Referee.User.Types
+                     , Referee.WidgetUtils
   build-depends:       base >= 4.7 && < 5
                      , referee-common
                      , servant

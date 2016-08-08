@@ -45,7 +45,7 @@ loginServer interpretLogin secret =
 
     login <- maybeLogin ?? err401 { errBody = Char8.pack "Nah those credentials didn't work." }
 
-    let ejwt = hmacEncode HS512 (Char8.toStrict (Data.Aeson.encode (userId login))) secret
+    let ejwt = hmacEncode HS512 secret (Char8.toStrict (Data.Aeson.encode (userId login)))
 
     case ejwt of
       Left jwtError -> throwError err500 { errBody = Char8.pack "Welp something went wrong on our end trying to create your auth token." }
