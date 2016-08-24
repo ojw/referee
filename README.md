@@ -1,4 +1,4 @@
-# Referee
+![Referee](logo.png)
 
 A library? executable? for serving multiplayer games.
 
